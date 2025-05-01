@@ -1,1 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--background: 220 27% 96%;
+	--foreground: 210 25% 12%;
+	--muted: 210 17% 95%;
+	--muted-foreground: 215 16% 47%;
+	--popover: 220 27% 98%;
+	--popover-foreground: 210 25% 12%;
+	--card: 220 27% 99%;
+	--card-foreground: 210 25% 12%;
+	--border: 216 12% 84%;
+	--input: 216 12% 84%;
+	--primary: 35 100% 59%;
+	--primary-foreground: 210 25% 12%;
+	--secondary: 210 17% 95%;
+	--secondary-foreground: 210 25% 12%;
+	--accent: 210 17% 97%;
+	--accent-foreground: 210 25% 12%;
+	--destructive: 0 85% 60%;
+	--destructive-foreground: 210 25% 12%;
+	--ring: 216 12% 84%;
+	--radius: 0.19rem;
+	--sidebar-background: 220 27% 98%;
+	--sidebar-foreground: 215 16% 47%;
+	--sidebar-primary: 35 100% 50%;
+	--sidebar-primary-foreground: 210 25% 12%;
+	--sidebar-accent: 210 17% 95%;
+	--sidebar-accent-foreground: 210 25% 12%;
+	--sidebar-border: 216 12% 84%;
+	--sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+.dark {
+	--background: 210 25% 16%;
+	--foreground: 220 27% 98%;
+	--muted: 215 16% 15%;
+	--muted-foreground: 215 16% 65%;
+	--popover: 210 25% 12%;
+	--popover-foreground: 220 27% 98%;
+	--card: 210 25% 12%;
+	--card-foreground: 220 27% 98%;
+	--border: 215 16% 15%;
+	--input: 215 16% 15%;
+	--primary: 35 100% 50%;
+	--primary-foreground: 210 25% 12%;
+	--secondary: 215 16% 15%;
+	--secondary-foreground: 220 27% 98%;
+	--accent: 215 16% 15%;
+	--accent-foreground: 220 27% 98%;
+	--destructive: 0 85% 60%;
+	--destructive-foreground: 210 25% 12%;
+	--ring: 216 12% 84%;
+	--sidebar-background: 210 25% 12%;
+	--sidebar-foreground: 220 27% 98%;
+	--sidebar-primary: 35 100% 50%;
+	--sidebar-primary-foreground: 210 25% 12%;
+	--sidebar-accent: 215 16% 15%;
+	--sidebar-accent-foreground: 220 27% 98%;
+	--sidebar-border: 215 16% 15%;
+	--sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+@theme {
+	--color-background: hsl(var(--background));
+	--color-foreground: hsl(var(--foreground));
+	--color-card: hsl(var(--card));
+	--color-card-foreground: hsl(var(--card-foreground));
+	--color-popover: hsl(var(--popover));
+	--color-popover-foreground: hsl(var(--popover-foreground));
+	--color-primary: hsl(var(--primary));
+	--color-primary-foreground: hsl(var(--primary-foreground));
+	--color-secondary: hsl(var(--secondary));
+	--color-secondary-foreground: hsl(var(--secondary-foreground));
+	--color-muted: hsl(var(--muted));
+	--color-muted-foreground: hsl(var(--muted-foreground));
+	--color-accent: hsl(var(--accent));
+	--color-accent-foreground: hsl(var(--accent-foreground));
+	--color-destructive: hsl(var(--destructive));
+	--color-destructive-foreground: hsl(var(--destructive-foreground));
+	--color-border: hsl(var(--border));
+	--color-input: hsl(var(--input));
+	--color-ring: hsl(var(--ring));
+	--radius: var(--radius);
+}
+
+:root {
+	body {
+		@apply bg-background text-foreground;
+	}
+}
+
+@theme {
+	--font-mono: 'Fira Code', monospace;
+	--font-serif: 'IBM Plex Serif', serif;
+}
