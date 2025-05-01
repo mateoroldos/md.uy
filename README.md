@@ -1,38 +1,80 @@
-# sv
+# Collaborative Markdown Editor
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A real-time collaborative markdown editor that works peer-to-peer, built with Svelte, Yjs and WebRTC.
 
-## Creating a project
+## Overview
 
-If you're seeing this, you've probably already done this step. Congrats!
+This project allows multiple users to simultaneously edit markdown documents in real-time without requiring a central server. All collaboration happens directly between peers' browsers using WebRTC technology.
 
-```bash
-# create a new project in the current directory
-npx sv create
+## Features
 
-# create a new project in my-app
-npx sv create my-app
-```
+- Real-time collaborative editing
+- Peer-to-peer connection (no central server needed)
+- Markdown preview
+- Syntax highlighting
+- Automatic conflict resolution
+- Works offline (changes sync when reconnected)
+- Session persistence
 
-## Developing
+## Getting Started
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
+### Installation
 
 ```bash
-npm run build
+# Clone the repository
+git clone https://github.com/mateoroldos/collaborative-markdown.git
+cd collaborative-markdown
+
+# Install dependencies
+pnpm install
 ```
 
-You can preview the production build with `npm run preview`.
+### Development
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```bash
+# Start the development server
+pnpm run dev
+
+# Turn on the WebRTC signaling server
+PORT=4444 node ./node_modules/y-webrtc/bin/server.js
+```
+
+### Building for Production
+
+```bash
+# Create a production build
+pnpm run build
+
+# Preview the production build locally
+pnpm run preview
+```
+
+## How to Use
+
+1. Start the application and share the unique room URL with collaborators
+2. Each collaborator with the link can join the editing session
+3. Changes are synchronized in real-time between all participants
+4. The document is automatically saved in the browser's local storage
+
+## Architecture
+
+The application uses:
+
+- Svelte and SvelteKit for the UI and application framework
+- WebRTC peer-to-peer connections
+- Yjs for conflict-free replicated data types (CRDT)
+- IndexedDB for local storage of documents
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## Acknowledgments
+
+- Built with [Svelte](https://svelte.dev/) and [Yjs](https://yjs.dev/)
