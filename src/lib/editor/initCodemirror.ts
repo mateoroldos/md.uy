@@ -38,11 +38,14 @@ const theme = EditorView.theme({
 	'&': {
 		height: '100%',
 		fontSize: '0.92rem',
-		backgroundColor: 'hsl(var(--card)) !important',
-		color: 'hsl(var(--foreground)) !important'
+		backgroundColor: 'hsl(var(--card))',
+		color: 'hsl(var(--foreground))'
 	},
 	'&.cm-focused': {
 		outline: 'none'
+	},
+	'&.cm-focused .cm-cursor': {
+		borderLeftColor: 'hsl(var(--foreground))'
 	},
 	'.cm-content': {
 		fontFamily: 'var(--font-mono)',
@@ -54,17 +57,13 @@ const theme = EditorView.theme({
 		display: 'none'
 	},
 	'.cm-activeLine': {
-		backgroundColor: 'transparent !important'
+		backgroundColor: 'transparent'
 	},
 	'.cm-activeLineGutter': {
-		backgroundColor: 'transparent !important'
+		backgroundColor: 'transparent'
 	},
-	'.cm-focused': {
-		outline: 'none'
-	},
-	'.cm-header': { color: '#1F2937', fontWeight: 'bold' },
-	'.cm-emphasis': { fontStyle: 'italic' },
-	'.cm-strong': { fontWeight: 'bold' },
-	'.cm-link': { color: '#4F46E5' },
-	'.cm-url': { color: '#6366F1' }
+	'.ͼ7.ͼ5': { color: 'hsl(var(--foreground))' },
+	'.ͼ6.ͼc': { color: 'hsl(var(--primary))' },
+	'.ͼ5.ͼ6': { color: 'hsl(var(--muted-foreground))' },
+	'.ͼ7': { fontWeight: '500' }
 });

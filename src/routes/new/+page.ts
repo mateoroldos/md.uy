@@ -5,5 +5,5 @@ import { generateId } from '$lib/utils';
 
 export function load() {
 	const newDocumentId = generateId();
-	throw redirect(307, `/document/${newDocumentId}`);
+	throw redirect(307, `/${newDocumentId}`);
 }

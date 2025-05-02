@@ -52,6 +52,7 @@
 		"@codemirror/state": "^6.5.2",
 		"codemirror": "^6.0.1",
 		"marked": "^15.0.11",
+		"mode-watcher": "0.5.1",
 		"nanoid": "^5.1.5",
 		"randomcolor": "^0.6.2",
 		"y-codemirror.next": "^0.3.5",

@@ -8,6 +8,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
 	--background: 220 27% 96%;
 	--foreground: 210 25% 12%;
@@ -15,15 +17,15 @@
 	--muted-foreground: 215 16% 47%;
 	--popover: 220 27% 98%;
 	--popover-foreground: 210 25% 12%;
-	--card: 220 27% 99%;
+	--card: 220 27% 98%;
 	--card-foreground: 210 25% 12%;
 	--border: 216 12% 84%;
 	--input: 216 12% 84%;
-	--primary: 35 100% 59%;
-	--primary-foreground: 210 25% 12%;
+	--primary: 223 97% 58%;
+	--primary-foreground: 210 25% 92%;
 	--secondary: 210 17% 95%;
 	--secondary-foreground: 210 25% 12%;
-	--accent: 210 17% 97%;
+	--accent: 210 17% 98%;
 	--accent-foreground: 210 25% 12%;
 	--destructive: 0 85% 60%;
 	--destructive-foreground: 210 25% 12%;
@@ -31,7 +33,7 @@
 	--radius: 0.19rem;
 	--sidebar-background: 220 27% 98%;
 	--sidebar-foreground: 215 16% 47%;
-	--sidebar-primary: 35 100% 50%;
+	--sidebar-primary: 223 97% 58%;
 	--sidebar-primary-foreground: 210 25% 12%;
 	--sidebar-accent: 210 17% 95%;
 	--sidebar-accent-foreground: 210 25% 12%;
@@ -46,22 +48,22 @@
 	--muted-foreground: 215 16% 65%;
 	--popover: 210 25% 12%;
 	--popover-foreground: 220 27% 98%;
-	--card: 210 25% 12%;
+	--card: 210 25% 18%;
 	--card-foreground: 220 27% 98%;
-	--border: 215 16% 15%;
+	--border: 215 16% 34%;
 	--input: 215 16% 15%;
-	--primary: 35 100% 50%;
+	--primary: 223 87% 64%;
 	--primary-foreground: 210 25% 12%;
 	--secondary: 215 16% 15%;
 	--secondary-foreground: 220 27% 98%;
-	--accent: 215 16% 15%;
+	--accent: 210 25% 19%;
 	--accent-foreground: 220 27% 98%;
 	--destructive: 0 85% 60%;
 	--destructive-foreground: 210 25% 12%;
 	--ring: 216 12% 84%;
 	--sidebar-background: 210 25% 12%;
 	--sidebar-foreground: 220 27% 98%;
-	--sidebar-primary: 35 100% 50%;
+	--sidebar-primary: 223 97% 58%;
 	--sidebar-primary-foreground: 210 25% 12%;
 	--sidebar-accent: 215 16% 15%;
 	--sidebar-accent-foreground: 220 27% 98%;
@@ -93,6 +95,9 @@
 }
 
 :root {
+	* {
+		@apply outline-ring/50 border-border;
+	}
 	body {
 		@apply bg-background text-foreground;
 	}

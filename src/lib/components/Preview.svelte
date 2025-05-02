@@ -28,5 +28,8 @@
 			No content to preview yet
 		</div>
 	{/if}
-	<div use:markedAction class="prose h-full min-w-full overflow-auto px-8 py-6 break-words"></div>
+	<div
+		use:markedAction
+		class="prose dark:prose-invert h-full min-w-full overflow-auto px-8 py-6 break-words"
+	></div>
 </div>

@@ -14,7 +14,7 @@
 
 	<div class="flex flex-row flex-wrap gap-2">
 		{#if connectedUsers.users.length === 0}
-			<div class="text-muted-foreground">No users connected</div>
+			<div class="text-muted-foreground/60">No users connected</div>
 		{:else}
 			{#each connectedUsers.users as user (user.name)}
 				<div

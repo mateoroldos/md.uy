@@ -2,39 +2,44 @@
 	import { goto } from '$app/navigation';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { generateId } from '$lib/utils';
+	import { NANOID_LENGTH } from '$lib/constants';
+	import { generateId, isValidId } from '$lib/utils';
+	import { ArrowRight } from '@lucide/svelte';
 
 	let documentId = $state('');
 
 	function createNewDocument() {
-		goto(`/document/${generateId()}`);
+		goto(`/${generateId()}`);
 	}
 
 	function joinDocument() {
-		if (documentId.trim()) goto(`/document/${documentId}`);
+		if (documentId.trim()) goto(`/${documentId}`);
 	}
 </script>
 
-<div class="container mx-auto flex h-full max-w-3xl flex-col justify-center">
-	<h1 class="mb-8 text-center text-2xl font-medium">Collaborative Markdown</h1>
+<div class="container mx-auto flex max-w-3xl flex-1 flex-col justify-center">
+	<div class="mb-10 text-center">
+		<h1 class="mb-1 text-center text-xl font-light tracking-widest">md.uy</h1>
+		<p class="text-muted-foreground text-xs">peer-to-peer markdown editor</p>
+	</div>
 
-	<div class="flex flex-col gap-8">
-		<div class="text-center">
-			<p class="mb-3 text-sm text-gray-600">Start fresh with a new document</p>
-			<Button class="w-64" onclick={createNewDocument}>Create New Document</Button>
-		</div>
+	<div class="flex flex-col items-center gap-10">
+		<Button class="w-52" onclick={createNewDocument}>New Document</Button>
 
-		<div class="text-center">
-			<p class="mb-3 text-sm text-gray-600">Or join an existing document</p>
-			<div class="flex justify-center gap-3">
+		<div class="text-center opacity-90">
+			<p class="text-muted-foreground mb-3 text-xs">connect to existing document</p>
+			<div class="flex justify-center gap-2">
 				<Input
-					class="w-64"
+					class="w-44"
 					bind:value={documentId}
-					placeholder="Enter document ID"
+					placeholder="document id"
 					type="text"
 					autocomplete="off"
+					maxlength={NANOID_LENGTH}
 				/>
-				<Button onclick={joinDocument} disabled={!documentId.trim()}>Join</Button>
+				<Button onclick={joinDocument} disabled={!isValidId(documentId)}>
+					<ArrowRight class="size-3!" />
+				</Button>
 			</div>
 		</div>
 	</div>

@@ -7,7 +7,6 @@
 	import { ActiveUser } from '$lib/stores/active-user.svelte';
 	import ConnectedUsers from '$lib/components/ConnectedUsers.svelte';
 	import ShareButton from '$lib/components/ShareButton.svelte';
-	import DocumentId from '$lib/components/DocumentId.svelte';
 	import CopyButton from '$lib/components/CopyButton.svelte';
 	import EditorModeToggle from '$lib/components/EditorModeToggle.svelte';
 	import type { EditorMode } from '$lib/types';
@@ -29,7 +28,6 @@
 	<div class="col-start-2 grid grid-rows-[auto_1fr] gap-3 overflow-hidden">
 		<div class="flex flex-row items-center justify-between gap-8">
 			<EditorModeToggle bind:viewMode />
-			<DocumentId />
 			<div class="flex flex-row items-center gap-2">
 				<ShareButton />
 				<CopyButton {ydoc} />
