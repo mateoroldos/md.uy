@@ -8,6 +8,7 @@
 	import ConnectedUsers from '$lib/components/ConnectedUsers.svelte';
 	import ShareButton from '$lib/components/ShareButton.svelte';
 	import CopyButton from '$lib/components/CopyButton.svelte';
+	import DownloadButton from '$lib/components/DownloadButton.svelte';
 	import EditorModeToggle from '$lib/components/EditorModeToggle.svelte';
 	import type { EditorMode } from '$lib/types';
 	import Profile from '$lib/components/Profile.svelte';
@@ -31,6 +32,7 @@
 			<div class="flex flex-row items-center gap-2">
 				<ShareButton />
 				<CopyButton {ydoc} />
+				<DownloadButton {ydoc} />
 			</div>
 		</div>
 		<div class="flex flex-col items-start gap-4 overflow-hidden rounded">

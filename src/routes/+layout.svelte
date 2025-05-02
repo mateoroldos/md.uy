@@ -9,7 +9,7 @@
 
 <ModeWatcher />
 <div class="absolute top-5.5 left-4 text-xs">
-	<a href="/" class="text-foreground/50">md.mr19.xyz</a>
+	<a href="/" class="text-foreground/50">md.uy</a>
 	{#if page.params.id}
 		<span class="text-foreground/50">/</span>
 		<span class="font-mono text-xs">{`${page.params.id}`}</span>
