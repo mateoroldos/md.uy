@@ -6,7 +6,13 @@ import { Y_TEXT_KEY } from '$lib/constants';
 export const initYjs = (id: string) => {
 	const ydoc = new Y.Doc();
 
-	const provider = new WebrtcProvider(id, ydoc);
+	const provider = new WebrtcProvider(id, ydoc, {
+		signaling: [
+			'wss://signaling.yjs.dev',
+			'wss://y-webrtc-signaling-eu.herokuapp.com',
+			'wss://y-webrtc-signaling-us.herokuapp.com'
+		]
+	});
 	const persistance = new IndexeddbPersistence(id, ydoc);
 
 	const ytext = ydoc.getText(Y_TEXT_KEY);
