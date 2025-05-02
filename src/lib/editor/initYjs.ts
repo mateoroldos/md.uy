@@ -6,9 +6,7 @@ import { Y_TEXT_KEY } from '$lib/constants';
 export const initYjs = (id: string) => {
 	const ydoc = new Y.Doc();
 
-	const provider = new WebrtcProvider(id, ydoc, {
-		signaling: [import.meta.env.VITE_SIGNALING_SERVER]
-	});
+	const provider = new WebrtcProvider(id, ydoc);
 	const persistance = new IndexeddbPersistence(id, ydoc);
 
 	const ytext = ydoc.getText(Y_TEXT_KEY);
