@@ -38,14 +38,14 @@ const theme = EditorView.theme({
 	'&': {
 		height: '100%',
 		fontSize: '0.92rem',
-		backgroundColor: 'hsl(var(--card))',
-		color: 'hsl(var(--foreground))'
+		backgroundColor: 'var(--card)',
+		color: 'var(--foreground)'
 	},
 	'&.cm-focused': {
 		outline: 'none'
 	},
 	'&.cm-focused .cm-cursor': {
-		borderLeftColor: 'hsl(var(--foreground))'
+		borderLeftColor: 'var(--foreground)'
 	},
 	'.cm-content': {
 		fontFamily: 'var(--font-mono)',
@@ -62,8 +62,8 @@ const theme = EditorView.theme({
 	'.cm-activeLineGutter': {
 		backgroundColor: 'transparent'
 	},
-	'.ͼ7.ͼ5': { color: 'hsl(var(--foreground))' },
-	'.ͼ6.ͼc': { color: 'hsl(var(--primary))' },
-	'.ͼ5.ͼ6': { color: 'hsl(var(--muted-foreground))' },
+	'.ͼ7.ͼ5': { color: 'var(--foreground)' },
+	'.ͼ6.ͼc': { color: 'oklch(var(--primary))' },
+	'.ͼ5.ͼ6': { color: 'oklch(var(--muted-foreground))' },
 	'.ͼ7': { fontWeight: '500' }
 });
