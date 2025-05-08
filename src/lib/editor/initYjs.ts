@@ -7,7 +7,7 @@ export const initYjs = (id: string) => {
 	const ydoc = new Y.Doc();
 
 	const provider = new WebrtcProvider(id, ydoc, {
-		signaling: ['wss://y-webrtc-eu.fly.dev']
+		signaling: [import.meta.env.VITE_SIGNALING_SERVER ?? 'http://localhost:8787']
 	});
 	const persistance = new IndexeddbPersistence(id, ydoc);
 
