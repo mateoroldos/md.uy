@@ -17,7 +17,9 @@
 	}
 </script>
 
-<div class="container mx-auto flex max-w-3xl flex-1 flex-col justify-center">
+<div
+	class="col-start-2 row-start-2 container mx-auto flex max-w-3xl flex-1 flex-col justify-center"
+>
 	<div class="mb-10 text-center">
 		<h1 class="mb-1 text-center text-xl font-light tracking-widest">md.uy</h1>
 		<p class="text-muted-foreground text-xs">peer-to-peer markdown editor</p>

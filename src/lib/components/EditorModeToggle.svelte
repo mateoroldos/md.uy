@@ -15,21 +15,21 @@
 
 <div class="flex items-center justify-end gap-2" role="group">
 	<Button
-		variant="ghost"
+		variant={viewMode !== 'edit' ? 'ghost' : 'secondary'}
 		size="sm"
 		onclick={() => toggleEditorMode('edit')}
 		shortcut={KEYMAP['EDIT_MODE']}
 	>
-		<span class={viewMode !== 'edit' ? 'opacity-40' : ''}>Edit</span>
+		Edit
 		<KeyboardShortcut shortcut={KEYMAP['EDIT_MODE']} />
 	</Button>
 	<Button
-		variant="ghost"
+		variant={viewMode !== 'preview' ? 'ghost' : 'secondary'}
 		size="sm"
 		onclick={() => toggleEditorMode('preview')}
 		shortcut={KEYMAP['PREVIEW_MODE']}
 	>
-		<span class={viewMode !== 'preview' ? 'opacity-40' : ''}>Preview</span>
+		Preview
 		<KeyboardShortcut shortcut={KEYMAP['PREVIEW_MODE']} />
 	</Button>
 </div>

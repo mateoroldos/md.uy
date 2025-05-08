@@ -24,24 +24,22 @@
 </script>
 
 <div
-	class="container mx-auto flex h-screen flex-col overflow-hidden p-4 md:grid md:grid-cols-[1fr_minmax(auto,90ch)_1fr] md:gap-8 lg:gap-12"
+	class="col-span-2 row-start-2 mx-auto flex w-full flex-row flex-wrap items-center justify-between gap-2 gap-3 md:col-span-1 md:col-start-2 md:row-start-1"
 >
-	<div class="col-start-2 grid grid-rows-[auto_1fr] gap-3 overflow-hidden">
-		<div class="flex flex-row items-center justify-between gap-8">
-			<EditorModeToggle bind:viewMode />
-			<div class="flex flex-row items-center gap-2">
-				<ShareButton />
-				<CopyButton {ydoc} />
-				<DownloadButton {ydoc} />
-			</div>
-		</div>
-		<div class="flex flex-col items-start gap-4 overflow-hidden rounded">
-			<Editor {provider} {ytext} isVisible={viewMode === 'edit'} />
-			<Preview {ytext} isVisible={viewMode === 'preview'} />
-		</div>
+	<EditorModeToggle bind:viewMode />
+	<div class="flex flex-row items-center gap-1 md:gap-2">
+		<ShareButton />
+		<CopyButton {ydoc} />
+		<DownloadButton {ydoc} />
 	</div>
-	<div class="order-first mt-0.5 mb-4 space-y-4 md:order-last md:col-start-3 md:space-y-8">
-		<Profile {activeUser} />
-		<ConnectedUsers {provider} {activeUser} />
-	</div>
+</div>
+<div
+	class="col-span-2 row-start-3 mx-auto flex h-full w-full flex-col items-start gap-4 overflow-hidden rounded md:col-span-1 md:col-start-2 md:row-start-2"
+>
+	<Editor {provider} {ytext} isVisible={viewMode === 'edit'} />
+	<Preview {ytext} isVisible={viewMode === 'preview'} />
+</div>
+<div class="col-start-3 row-start-2 hidden w-full items-start gap-8 md:flex md:flex-col">
+	<Profile {activeUser} />
+	<ConnectedUsers {provider} {activeUser} />
 </div>
