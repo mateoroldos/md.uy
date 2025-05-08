@@ -7,12 +7,7 @@ export const initYjs = (id: string) => {
 	const ydoc = new Y.Doc();
 
 	const provider = new WebrtcProvider(id, ydoc, {
-		signaling: [
-			'wss://y-webrtc-eu.fly.dev',
-			'wss://signaling.yjs.dev',
-			'wss://y-webrtc-signaling-eu.herokuapp.com',
-			'wss://y-webrtc-signaling-us.herokuapp.com'
-		]
+		signaling: ['wss://y-webrtc-eu.fly.dev']
 	});
 	const persistance = new IndexeddbPersistence(id, ydoc);
 
