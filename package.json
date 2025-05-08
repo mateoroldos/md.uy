@@ -23,6 +23,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/typography": "^0.5.16",
 		"@tailwindcss/vite": "^4.0.0",
+		"@types/node": "^22.15.17",
 		"@types/randomcolor": "^0.5.9",
 		"bits-ui": "^1.4.2",
 		"clsx": "^2.1.1",
