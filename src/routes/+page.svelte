@@ -43,11 +43,11 @@
 </script>
 
 <div
-	class="col-start-2 row-start-2 container mx-auto flex max-w-3xl flex-1 flex-col justify-center"
+	class="col-span-2 row-start-3 container mx-auto flex max-w-3xl flex-1 flex-col justify-center md:col-span-1 md:col-start-2 md:row-start-2"
 >
 	<div class="mb-10 text-center">
 		<h1 class="mb-1 text-center text-xl font-light tracking-widest">md.uy</h1>
-		<p class="text-muted-foreground/60 text-sm">the peer-to-peer markdown editor</p>
+		<p class="text-muted-foreground/70 text-sm">the peer-to-peer markdown editor</p>
 	</div>
 
 	<div class="flex flex-col items-center gap-10">
@@ -67,7 +67,7 @@
 		</div>
 
 		<div class="text-center opacity-90">
-			<p class="text-muted-foreground mb-3 text-sm">connect to existing document</p>
+			<p class="text-muted-foreground/70 mb-3 text-sm">connect to existing document</p>
 			<div class="flex justify-center gap-2">
 				<Input
 					class="w-44"

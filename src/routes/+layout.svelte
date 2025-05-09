@@ -14,8 +14,8 @@
 	<div class="flex items-center justify-start py-2 text-xs md:px-3">
 		<a href="/" class="text-foreground/50">md.uy</a>
 		{#if page.params.id}
-			<span class="text-foreground/50">/</span>
-			<span class="font-mono">{`${page.params.id}`}</span>
+			<span class="text-foreground/50 ml-1">/</span>
+			<span class="ml-1 pt-[2px] font-mono">{`${page.params.id}`}</span>
 		{/if}
 	</div>
 	{@render children()}

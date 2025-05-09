@@ -40,7 +40,7 @@
 	});
 </script>
 
-<Button variant="ghost" size="sm" onclick={shareURL} shortcut={KEYMAP['COPY_URL']}>
+<Button variant="outline" size="sm" onclick={shareURL} shortcut={KEYMAP['COPY_URL']} class="ml-3">
 	{#if shared}
 		<div in:fly={{ duration: 300, y: -5 }}>
 			<Check class="size-3! text-green-500" />
@@ -50,5 +50,6 @@
 			<Share2 class="size-3! opacity-80" />
 		</div>
 	{/if}
+	Share
 	<KeyboardShortcut shortcut={KEYMAP['COPY_URL']} />
 </Button>

@@ -21,7 +21,7 @@ export const KEYMAP: Record<Actions, Shortcut> = {
 		control: true
 	},
 	COPY_URL: {
-		code: 'KeyS',
+		code: 'KeyD',
 		alt: false,
 		shift: false,
 		control: true
@@ -33,7 +33,7 @@ export const KEYMAP: Record<Actions, Shortcut> = {
 		control: true
 	},
 	DOWNLOAD_CONTENT: {
-		code: 'KeyD',
+		code: 'KeyS',
 		alt: false,
 		shift: false,
 		control: true

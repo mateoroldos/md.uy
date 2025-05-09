@@ -38,9 +38,9 @@
 >
 	<EditorModeToggle bind:viewMode />
 	<div class="flex flex-row items-center gap-1 md:gap-2">
-		<ShareButton />
 		<CopyButton {ydoc} />
 		<DownloadButton {ydoc} />
+		<ShareButton />
 	</div>
 </div>
 <div
