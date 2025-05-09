@@ -11,7 +11,7 @@
 <ModeWatcher />
 <div class="flex w-full flex-col border">
 	<div
-		class="mx-auto grid w-[90%] flex-1 grid-cols-2 grid-rows-[auto_auto_1fr] flex-col gap-x-6 gap-y-1 overflow-hidden md:w-full md:grid-cols-[auto_min(55%,_800px)_auto] md:grid-rows-[auto_1fr_auto]"
+		class="mx-auto grid w-[90%] flex-1 grid-cols-2 grid-rows-[auto_auto_1fr] flex-col gap-x-6 gap-y-1 overflow-hidden md:w-full md:grid-cols-[1fr_min(55%,_800px)_1fr] md:grid-rows-[auto_1fr_auto]"
 	>
 		<div class="flex items-center justify-start py-2 text-xs md:px-3">
 			<a href="/" class="text-foreground/70">md.uy</a>
@@ -28,17 +28,19 @@
 			<ThemeToggle />
 		</div>
 	</div>
-	<footer class="text-foreground/50 border-t-border/40! pt-1 pb-2 text-center text-xs">
-		<div class="inline-flex gap-2 font-mono">
-			<a href="https://mr19.xyz" target="_blank" class="hover:text-foreground duration-100"
-				>mr19.xyz</a
-			>
-			<span>•</span>
-			<a
-				href="https://github.com/mateoroldos/md.uy"
-				target="_blank"
-				class="hover:text-foreground inline-flex items-center gap-1 duration-100">github</a
-			>
-		</div>
+	<footer
+		class="text-foreground/50 border-t-border/40! mt-2 flex justify-center gap-2 border-t pt-1 pb-2 font-mono text-xs"
+	>
+		<a href="/about" class="hover:text-foreground duration-100">about</a>
+		<span>•</span>
+		<a href="https://mr19.xyz" target="_blank" class="hover:text-foreground duration-100"
+			>mr19.xyz</a
+		>
+		<span>•</span>
+		<a
+			href="https://github.com/mateoroldos/md.uy"
+			target="_blank"
+			class="hover:text-foreground inline-flex items-center gap-1 duration-100">github</a
+		>
 	</footer>
 </div>

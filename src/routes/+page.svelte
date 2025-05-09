@@ -46,8 +46,8 @@
 	class="col-span-2 row-start-3 container mx-auto flex max-w-3xl flex-1 flex-col justify-center md:col-span-1 md:col-start-2 md:row-start-2"
 >
 	<div class="mb-10 text-center">
-		<h1 class="mb-1 text-center text-xl font-light tracking-widest">md.uy</h1>
-		<p class="text-muted-foreground/70 text-sm">the peer-to-peer markdown editor</p>
+		<h1 class="mb-1 text-center text-2xl font-medium tracking-widest">md.uy</h1>
+		<p class="text-muted-foreground/70 pb-2">the peer-to-peer markdown editor</p>
 	</div>
 
 	<div class="flex flex-col items-center gap-10">
@@ -62,7 +62,7 @@
 			/>
 			<Button variant="outline" class="w-52" onclick={() => fileInput.click()}>
 				<Upload class="mr-2 size-3!" />
-				Import .md
+				Import .md file
 			</Button>
 		</div>
 
