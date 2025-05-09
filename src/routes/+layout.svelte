@@ -9,7 +9,7 @@
 </script>
 
 <ModeWatcher />
-<div class="flex w-full flex-col border">
+<div class="flex w-full flex-col">
 	<div
 		class="mx-auto grid w-[90%] flex-1 grid-cols-2 grid-rows-[auto_auto_1fr] flex-col gap-x-6 gap-y-1 overflow-hidden md:w-full md:grid-cols-[1fr_min(55%,_800px)_1fr] md:grid-rows-[auto_1fr_auto]"
 	>
