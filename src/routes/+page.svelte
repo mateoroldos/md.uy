@@ -4,9 +4,10 @@
 	import { Input } from '$lib/components/ui/input';
 	import { NANOID_LENGTH } from '$lib/constants';
 	import { generateId, isValidId } from '$lib/utils';
-	import { ArrowRight } from '@lucide/svelte';
+	import { ArrowRight, Upload } from '@lucide/svelte';
 
 	let documentId = $state('');
+	let fileInput: HTMLInputElement;
 
 	function createNewDocument() {
 		goto(`/${generateId()}`);
@@ -15,6 +16,30 @@
 	function joinDocument() {
 		if (documentId.trim()) goto(`/${documentId}`);
 	}
+
+	async function handleFileImport(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const file = target.files?.[0];
+
+		if (!file) return;
+
+		if (!file.name.toLowerCase().endsWith('.md')) {
+			alert('Please select a valid markdown (.md) file');
+			return;
+		}
+
+		try {
+			const content = await file.text();
+			const newDocId = generateId();
+
+			sessionStorage.setItem(`import-${newDocId}`, content);
+
+			goto(`/${newDocId}`);
+		} catch (error) {
+			console.error('Error reading file:', error);
+			alert('Error reading the file. Please try again.');
+		}
+	}
 </script>
 
 <div
@@ -22,14 +47,27 @@
 >
 	<div class="mb-10 text-center">
 		<h1 class="mb-1 text-center text-xl font-light tracking-widest">md.uy</h1>
-		<p class="text-muted-foreground text-xs">peer-to-peer markdown editor</p>
+		<p class="text-muted-foreground/60 text-sm">the peer-to-peer markdown editor</p>
 	</div>
 
 	<div class="flex flex-col items-center gap-10">
-		<Button class="w-52" onclick={createNewDocument}>New Document</Button>
+		<div class="flex flex-col items-center gap-4 md:flex-row">
+			<Button class="w-52" onclick={createNewDocument}>New Document</Button>
+			<input
+				type="file"
+				accept=".md"
+				class="hidden"
+				bind:this={fileInput}
+				onchange={handleFileImport}
+			/>
+			<Button variant="outline" class="w-52" onclick={() => fileInput.click()}>
+				<Upload class="mr-2 size-3!" />
+				Import .md
+			</Button>
+		</div>
 
 		<div class="text-center opacity-90">
-			<p class="text-muted-foreground mb-3 text-xs">connect to existing document</p>
+			<p class="text-muted-foreground mb-3 text-sm">connect to existing document</p>
 			<div class="flex justify-center gap-2">
 				<Input
 					class="w-44"

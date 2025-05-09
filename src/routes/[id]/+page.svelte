@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Preview from '$lib/components/Preview.svelte';
 	import { page } from '$app/state';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { initYjs } from '$lib/editor/initYjs';
 	import Editor from '$lib/components/Editor.svelte';
 	import { ActiveUser } from '$lib/stores/active-user.svelte';
@@ -17,6 +17,16 @@
 
 	const { ydoc, provider, ytext, cleanup } = initYjs(page.params.id);
 	const activeUser = new ActiveUser('Anonymus', provider);
+
+	onMount(() => {
+		const importKey = `import-${page.params.id}`;
+		const importedContent = sessionStorage.getItem(importKey);
+
+		if (importedContent) {
+			ytext.insert(0, importedContent);
+			sessionStorage.removeItem(importKey);
+		}
+	});
 
 	onDestroy(() => {
 		cleanup();

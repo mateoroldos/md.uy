@@ -41,7 +41,7 @@
 						bind:value={activeUser.activeUser.color}
 						class="h-8 w-8 cursor-pointer rounded"
 					/>
-					<span class="font-mono text-xs">{activeUser.activeUser.color}</span>
+					<span class="font-mono text-sm">{activeUser.activeUser.color}</span>
 				</div>
 			</div>
 		</div>
