@@ -38,7 +38,19 @@ export default defineConfig({
 				]
 			},
 			workbox: {
-				globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+				globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+				runtimeCaching: [
+					{
+						urlPattern: '/api/github-stars',
+						handler: 'StaleWhileRevalidate',
+						options: {
+							cacheName: 'github-stars-cache',
+							expiration: {
+								maxAgeSeconds: 60 * 60 // 1 hour
+							}
+						}
+					}
+				]
 			}
 		})
 	]

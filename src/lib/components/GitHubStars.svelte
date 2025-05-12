@@ -8,7 +8,7 @@
 
 	async function fetchGitHubStars() {
 		try {
-			const response = await fetch('https://api.github.com/repos/mateoroldos/md.uy');
+			const response = await fetch('/api/github-stars');
 			const data = await response.json();
 			stars = data.stargazers_count;
 		} catch (e) {
