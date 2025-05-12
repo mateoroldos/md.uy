@@ -8,9 +8,11 @@ export default defineConfig({
 		tailwindcss(),
 		sveltekit(),
 		SvelteKitPWA({
+			registerType: 'autoUpdate',
 			srcDir: './src',
 			mode: 'development',
 			strategies: 'generateSW',
+			injectRegister: 'auto',
 			filename: undefined,
 			scope: '/',
 			base: '/',
@@ -51,8 +53,7 @@ export default defineConfig({
 			devOptions: {
 				enabled: true,
 				suppressWarnings: true,
-				type: 'module',
-				navigateFallback: '/'
+				type: 'module'
 			}
 		})
 	]

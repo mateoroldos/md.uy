@@ -2,7 +2,6 @@ import { isValidId } from '$lib/utils';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const ssr = false;
 export const prerender = false;
 
 export const load: PageLoad = ({ params }) => {
@@ -13,4 +12,8 @@ export const load: PageLoad = ({ params }) => {
 			message: 'Invalid Document ID'
 		});
 	}
+
+	return {
+		documentId
+	};
 };
