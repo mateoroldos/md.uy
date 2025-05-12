@@ -2,13 +2,13 @@ import { WebrtcProvider } from 'y-webrtc';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import * as Y from 'yjs';
 import { Y_TEXT_KEY } from '$lib/constants';
-import { PUBLIC_SIGNALING_SERVER } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 export const initYjs = (id: string) => {
 	const ydoc = new Y.Doc();
 
 	const provider = new WebrtcProvider(id, ydoc, {
-		signaling: [PUBLIC_SIGNALING_SERVER ?? 'http://localhost:8787']
+		signaling: [env.PUBLIC_SIGNALING_SERVER ?? 'http://localhost:8787']
 	});
 	const persistance = new IndexeddbPersistence(id, ydoc);
 
