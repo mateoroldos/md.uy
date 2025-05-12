@@ -5,15 +5,33 @@
 	import { slide } from 'svelte/transition';
 
 	let { provider } = $props<{ provider?: WebrtcProvider; activeUser: ActiveUser }>();
+	let isOnline = $state(true);
 
 	const connectedUsers = new ConnectedUsers(provider);
+
+	$effect(() => {
+		isOnline = navigator.onLine;
+
+		const handleOnline = () => (isOnline = true);
+		const handleOffline = () => (isOnline = false);
+
+		window.addEventListener('online', handleOnline);
+		window.addEventListener('offline', handleOffline);
+
+		return () => {
+			window.removeEventListener('online', handleOnline);
+			window.removeEventListener('offline', handleOffline);
+		};
+	});
 </script>
 
 <div class="text-xs">
 	<h3 class="m-0 mb-2 font-medium">Connected Users</h3>
 
 	<div class="flex flex-row flex-wrap gap-2">
-		{#if connectedUsers.users.length === 0}
+		{#if !isOnline}
+			<div class="text-muted-foreground/60">Working offline</div>
+		{:else if connectedUsers.users.length === 0}
 			<div class="text-muted-foreground/60">No users connected</div>
 		{:else}
 			{#each connectedUsers.users as user (user.name)}
