@@ -1,14 +1,19 @@
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-import { VitePWA } from 'vite-plugin-pwa';
+import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
-		VitePWA({
-			registerType: 'autoUpdate',
+		SvelteKitPWA({
+			srcDir: './src',
+			mode: 'development',
+			strategies: 'generateSW',
+			filename: undefined,
+			scope: '/',
+			base: '/',
 			manifest: {
 				name: 'md.uy',
 				short_name: 'md.uy',
@@ -37,20 +42,17 @@ export default defineConfig({
 					}
 				]
 			},
+			injectManifest: {
+				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2}']
+			},
 			workbox: {
-				globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-				runtimeCaching: [
-					{
-						urlPattern: '/api/github-stars',
-						handler: 'StaleWhileRevalidate',
-						options: {
-							cacheName: 'github-stars-cache',
-							expiration: {
-								maxAgeSeconds: 60 * 60 // 1 hour
-							}
-						}
-					}
-				]
+				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2}']
+			},
+			devOptions: {
+				enabled: true,
+				suppressWarnings: true,
+				type: 'module',
+				navigateFallback: '/'
 			}
 		})
 	]

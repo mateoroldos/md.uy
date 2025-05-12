@@ -24,6 +24,7 @@
 		"@tailwindcss/typography": "^0.5.16",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/randomcolor": "^0.5.9",
+		"@vite-pwa/sveltekit": "^1.0.0",
 		"bits-ui": "^1.4.2",
 		"clsx": "^2.1.1",
 		"eslint": "^9.18.0",
@@ -42,7 +43,7 @@
 		"typescript": "^5.0.0",
 		"typescript-eslint": "^8.20.0",
 		"vite": "^6.2.6",
-		"vite-plugin-pwa": "^1.0.0"
+		"workbox-window": "^7.3.0"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [

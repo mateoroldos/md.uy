@@ -4,9 +4,17 @@
 	import GitHubStars from '$lib/components/GitHubStars.svelte';
 	import '../app.css';
 	import { ModeWatcher } from 'mode-watcher';
+	import { pwaInfo } from 'virtual:pwa-info';
+
+	const webManifest = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '');
 
 	let { children } = $props();
 </script>
+
+<svelte:head>
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+	{@html webManifest}
+</svelte:head>
 
 <ModeWatcher />
 <div class="flex w-full flex-col">
@@ -44,3 +52,7 @@
 		>
 	</footer>
 </div>
+
+{#await import('$lib/components/ReloadPrompt.svelte') then { default: ReloadPrompt }}
+	<ReloadPrompt />
+{/await}
