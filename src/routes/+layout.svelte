@@ -39,9 +39,9 @@
 		</div>
 	</div>
 	<footer
-		class="text-foreground/50 border-t-border/40! mt-2 flex justify-between gap-2 border-t px-3 pt-1 pb-2 font-mono text-[0.7rem] tracking-tight"
+		class="text-foreground/50 border-t-border/40! mt-2 flex justify-between gap-2 border-t px-3 pt-1.5 pb-2 font-mono text-[0.7rem] leading-[0.7] tracking-tight"
 	>
-		<div class="flex gap-2">
+		<div class="flex items-center gap-2">
 			<a href="/about" class="hover:text-foreground duration-100">about</a>
 			<span>•</span>
 			<a href="https://mr19.xyz" target="_blank" class="hover:text-foreground duration-100"
@@ -51,7 +51,7 @@
 			<a
 				href="https://github.com/mateoroldos/md.uy"
 				target="_blank"
-				class="hover:text-foreground inline-flex items-center gap-1 duration-100">github</a
+				class="hover:text-foreground duration-100">github</a
 			>
 		</div>
 		<div class="flex items-center gap-5">
