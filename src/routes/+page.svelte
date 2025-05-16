@@ -5,6 +5,7 @@
 	import { NANOID_LENGTH } from '$lib/constants';
 	import { generateId, isValidId } from '$lib/utils';
 	import { ArrowRight, Upload } from '@lucide/svelte';
+	import NotesTable from '$lib/components/NotesTable.svelte';
 
 	let documentId = $state('');
 	let fileInput: HTMLInputElement;
@@ -14,7 +15,7 @@
 	}
 
 	function joinDocument() {
-		if (documentId.trim()) goto(`/${documentId}`);
+		if (isValidId(documentId.trim())) goto(`/${documentId}`);
 	}
 
 	async function handleFileImport(event: Event) {
@@ -43,15 +44,15 @@
 </script>
 
 <div
-	class="col-span-2 row-start-3 container mx-auto flex max-w-3xl flex-1 flex-col justify-center md:col-span-1 md:col-start-2 md:row-start-2"
+	class="col-span-2 row-start-3 container mx-auto flex max-w-3xl flex-1 flex-col py-8 md:col-span-1 md:col-start-2 md:row-start-2"
 >
 	<div class="mb-10 text-center">
 		<h1 class="mb-1 text-center text-2xl font-medium tracking-widest">md.uy</h1>
 		<p class="text-muted-foreground/70 pb-2">the peer-to-peer markdown editor</p>
 	</div>
 
-	<div class="flex flex-col items-center gap-10">
-		<div class="flex flex-col items-center gap-4 md:flex-row">
+	<!-- <div class="flex flex-col items-center gap-10"> -->
+	<!-- <div class="flex flex-col items-center gap-4 md:flex-row">
 			<Button class="w-52" onclick={createNewDocument}>New Document</Button>
 			<input
 				type="file"
@@ -81,6 +82,8 @@
 					<ArrowRight class="size-3!" />
 				</Button>
 			</div>
-		</div>
-	</div>
+		</div> -->
+
+	<NotesTable />
+	<!-- </div> -->
 </div>

@@ -7,10 +7,51 @@
 	import '../app.css';
 	import { ModeWatcher } from 'mode-watcher';
 	import { pwaInfo } from 'virtual:pwa-info';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import { goto } from '$app/navigation';
+	import { generateId, isValidId } from '$lib/utils';
+	import { ArrowRight, Plus, Upload } from '@lucide/svelte';
+	import Input from '$lib/components/ui/input/input.svelte';
+	import { NANOID_LENGTH } from '$lib/constants';
+
+	let { children } = $props();
+
+	let documentId = $state('');
+	let fileInput: HTMLInputElement;
 
 	const webManifest = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '');
 
-	let { children } = $props();
+	function createNewDocument() {
+		goto(`/${generateId()}`);
+	}
+
+	function joinDocument() {
+		if (isValidId(documentId.trim())) goto(`/${documentId}`);
+	}
+
+	async function handleFileImport(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const file = target.files?.[0];
+
+		if (!file) return;
+
+		if (!file.name.toLowerCase().endsWith('.md')) {
+			alert('Please select a valid markdown (.md) file');
+			return;
+		}
+
+		try {
+			const content = await file.text();
+			const newDocId = generateId();
+
+			sessionStorage.setItem(`import-${newDocId}`, content);
+
+			goto(`/${newDocId}`);
+		} catch (error) {
+			console.error('Error reading file:', error);
+			alert('Error reading the file. Please try again.');
+		}
+	}
 </script>
 
 <svelte:head>
@@ -32,10 +73,40 @@
 		</div>
 		{@render children()}
 		<div
-			class="col-start-2 row-start-1 flex items-center justify-end gap-1 py-2 md:col-start-3 md:px-3"
+			class="col-start-2 row-start-1 flex items-center justify-end gap-2 py-2 md:col-start-3 md:px-3"
 		>
 			<GitHubStars />
 			<ThemeToggle />
+			<div class="relative ml-1">
+				<Input
+					class="h-7 w-32 pr-9 font-mono text-xs md:text-xs"
+					bind:value={documentId}
+					placeholder="document id"
+					type="text"
+					autocomplete="off"
+					maxlength={NANOID_LENGTH}
+				/>
+				<Button
+					class="absolute top-1/2 right-1 size-5 -translate-y-1/2"
+					onclick={joinDocument}
+					disabled={!isValidId(documentId)}
+					variant="ghost"
+					size="icon"
+				>
+					<ArrowRight class="size-3!" />
+				</Button>
+			</div>
+			<input
+				type="file"
+				accept=".md"
+				class="hidden"
+				bind:this={fileInput}
+				onchange={handleFileImport}
+			/>
+			<Button size="icon" variant="outline" onclick={() => fileInput.click()}>
+				<Upload class="size-3!" />
+			</Button>
+			<Button size="icon" onclick={createNewDocument}><Plus class="size-3!" /></Button>
 		</div>
 	</div>
 	<footer

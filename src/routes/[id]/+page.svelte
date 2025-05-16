@@ -12,6 +12,8 @@
 	import EditorModeToggle from '$lib/components/EditorModeToggle.svelte';
 	import type { EditorMode } from '$lib/types';
 	import Profile from '$lib/components/Profile.svelte';
+	import { db } from '$lib/db';
+	import debounce from 'debounce';
 
 	let viewMode = $state<EditorMode>('edit');
 
@@ -27,6 +29,26 @@
 			sessionStorage.removeItem(importKey);
 		}
 	});
+
+	ytext.observe(
+		debounce(() => {
+			const lines = ytext.toString().split('\n');
+			const headingLine = lines.find((line) => line.startsWith('# '));
+
+			if (headingLine) {
+				db.notes.update(page.params.id, {
+					title: headingLine.substring(2),
+					lastEdited: Date.now()
+				});
+
+				return;
+			}
+
+			db.notes.update(page.params.id, {
+				lastEdited: Date.now()
+			});
+		}, 500)
+	);
 
 	onDestroy(() => {
 		cleanup();
