@@ -134,7 +134,7 @@
 		</div>
 	</div>
 	<footer
-		class="text-foreground/50 border-t-border/40! mt-2 flex justify-between gap-2 border-t px-3 pt-1.5 pb-2 font-mono text-[0.7rem] leading-[0.7] tracking-tight"
+		class="text-foreground/50 border-t-border/40! mt-2 flex items-center justify-between gap-2 border-t px-3 pt-1.5 pb-2 font-mono text-[0.7rem] leading-[0.7] tracking-tight"
 	>
 		<div class="flex items-center gap-2">
 			<a href="/about" class="hover:text-foreground duration-100">about</a>
@@ -149,6 +149,9 @@
 				class="hover:text-foreground duration-100">github</a
 			>
 		</div>
+		<span class="text-foreground/50 text-[0.7rem]"
+			>md.uy is in an experimental state, please download important notes.</span
+		>
 		<div class="flex items-center gap-5">
 			<OnlineStatus />
 			<PWAStatus />
