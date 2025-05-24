@@ -6,6 +6,10 @@
 	const { notes } = data;
 </script>
 
+<svelte:head>
+	<title>md.uy • markdown editor</title>
+</svelte:head>
+
 <div
 	class="col-span-2 row-start-3 container mx-auto flex max-w-3xl flex-1 flex-col py-8 md:col-span-1 md:col-start-2 md:row-start-2"
 >

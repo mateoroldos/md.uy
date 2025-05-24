@@ -53,6 +53,10 @@
 	});
 </script>
 
+<svelte:head>
+	<title>md.uy • {page.params.id}</title>
+</svelte:head>
+
 <div
 	class="col-span-2 row-start-2 mx-auto flex w-full flex-row flex-wrap items-center justify-between gap-3 md:col-span-1 md:col-start-2 md:row-start-1"
 >
