@@ -10,7 +10,7 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { goto } from '$app/navigation';
 	import { generateId, isValidId } from '$lib/utils';
-	import { ArrowRight, Plus, Upload, Pin } from '@lucide/svelte';
+	import { ArrowRight, Plus, Upload, Pin, Calendar } from '@lucide/svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { NANOID_LENGTH } from '$lib/constants';
 	import type { LayoutProps } from './$types';
@@ -31,6 +31,32 @@
 
 	function joinDocument() {
 		if (isValidId(documentId.trim())) goto(`/${documentId}`);
+	}
+
+	function createTodayNote() {
+		const today = new Date();
+		const months = [
+			'January',
+			'February',
+			'March',
+			'April',
+			'May',
+			'June',
+			'July',
+			'August',
+			'September',
+			'October',
+			'November',
+			'December'
+		];
+		const day = today.getDate();
+		const month = months[today.getMonth()];
+		const year = today.getFullYear();
+		const content = `# ${day} of ${month}, ${year}`;
+
+		const newDocId = generateId();
+		sessionStorage.setItem(`import-${newDocId}`, content);
+		goto(`/${newDocId}`);
 	}
 
 	async function handleFileImport(event: Event) {
@@ -77,6 +103,17 @@
 		</div>
 		{@render children()}
 		<div class="row-start-2 flex flex-col px-3 py-2">
+			<div class="mb-4">
+				<Button
+					variant="outline"
+					size="sm"
+					class="flex items-center gap-1 text-xs"
+					onclick={createTodayNote}
+				>
+					<Calendar class="size-3!" />
+					<span>Today's Note</span>
+				</Button>
+			</div>
 			{#if pinnedNotes && pinnedNotes.length > 0}
 				<h3 class="mb-2 flex items-center gap-1 text-xs font-medium">
 					<Pin class="size-3" /> Pinned Notes
