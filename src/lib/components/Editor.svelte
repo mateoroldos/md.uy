@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { codemirror } from '$lib/editor/codemirror-action.svelte';
 	import type { WebrtcProvider } from 'y-webrtc';
 	import * as Y from 'yjs';
@@ -9,7 +10,7 @@
 		isVisible: boolean;
 	}>();
 
-	let isEmpty = $state(!ytext.length);
+	let isEmpty = $derived(!ytext.length);
 
 	ytext.observe(() => {
 		isEmpty = !ytext.length;
@@ -22,5 +23,14 @@
 			Start typing to add content...
 		</span>
 	{/if}
-	<div use:codemirror={{ provider, ytext, isVisible }} class="h-full focus:outline-none"></div>
+	{#key page.params.id}
+		<div
+			use:codemirror={{
+				provider,
+				ytext,
+				isVisible
+			}}
+			class="h-full focus:outline-none"
+		></div>
+	{/key}
 </div>
