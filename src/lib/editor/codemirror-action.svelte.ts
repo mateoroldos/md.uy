@@ -12,9 +12,9 @@ export const codemirror = (
 	node: HTMLElement,
 	{ ytext, provider, isVisible }: CodeMirrorOptions
 ) => {
-	let isVisibleState = $state(isVisible);
-
 	const { editorView } = initCodemirror(node, ytext, provider);
+
+	let isVisibleState = $state(isVisible);
 
 	$effect(() => {
 		if (isVisibleState && editorView) {

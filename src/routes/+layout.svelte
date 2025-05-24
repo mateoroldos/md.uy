@@ -10,16 +10,20 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { goto } from '$app/navigation';
 	import { generateId, isValidId } from '$lib/utils';
-	import { ArrowRight, Plus, Upload } from '@lucide/svelte';
+	import { ArrowRight, Plus, Upload, Pin } from '@lucide/svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { NANOID_LENGTH } from '$lib/constants';
+	import type { LayoutProps } from './$types';
 
-	let { children } = $props();
+	let { children, data }: LayoutProps = $props();
+	const { notes } = data;
 
 	let documentId = $state('');
 	let fileInput: HTMLInputElement;
 
 	const webManifest = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '');
+
+	const pinnedNotes = $derived($notes && $notes.filter((note) => note.isPinned));
 
 	function createNewDocument() {
 		goto(`/${generateId()}`);
@@ -72,6 +76,26 @@
 			{/if}
 		</div>
 		{@render children()}
+		<div class="row-start-2 flex flex-col px-3 py-2">
+			{#if pinnedNotes && pinnedNotes.length > 0}
+				<h3 class="mb-2 flex items-center gap-1 text-xs font-medium">
+					<Pin class="size-3" /> Pinned Notes
+				</h3>
+				<ul class="space-y-1 text-xs">
+					{#each pinnedNotes as note (note.id)}
+						<li>
+							<a
+								href="/{note.id}"
+								class="hover:text-foreground text-foreground/70 block truncate transition-colors duration-100"
+								title={note.title}
+							>
+								{note.title || 'Untitled Note'}
+							</a>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</div>
 		<div
 			class="col-start-2 row-start-1 flex items-center justify-end gap-2 py-2 md:col-start-3 md:px-3"
 		>

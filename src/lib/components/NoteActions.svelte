@@ -3,34 +3,27 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { db, type Note } from '$lib/db';
+	import {
+		deleteNote as deleteNoteAction,
+		togglePin as togglePinAction,
+		toggleFavorite as toggleFavoriteAction
+	} from '$lib/actions/notes-actions';
 
 	let { note }: { note: Note } = $props();
 
 	async function deleteNote(e: MouseEvent) {
 		e.stopPropagation();
-		try {
-			await db.notes.delete(note.id);
-		} catch (error) {
-			console.error('Failed to delete note:', error);
-		}
+		await deleteNoteAction(note, db);
 	}
 
 	async function togglePin(e: MouseEvent) {
 		e.stopPropagation();
-		try {
-			await db.notes.update(note.id, { isPinned: !note.isPinned });
-		} catch (error) {
-			console.error('Failed to toggle pin:', error);
-		}
+		await togglePinAction(note, db);
 	}
 
 	async function toggleFavorite(e: MouseEvent) {
 		e.stopPropagation();
-		try {
-			await db.notes.update(note.id, { isFavorite: !note.isFavorite });
-		} catch (error) {
-			console.error('Failed to toggle favorite:', error);
-		}
+		await toggleFavoriteAction(note, db);
 	}
 </script>
 
@@ -45,14 +38,14 @@
 	</DropdownMenu.Trigger>
 	<DropdownMenu.Content align="end">
 		<DropdownMenu.Item onclick={togglePin}>
-			<Pin class="mr-2 h-4 w-4" />{note.isPinned ? 'Unpin' : 'Pin'}
+			<Pin class="mr-2 size-3!" />{note.isPinned ? 'Unpin' : 'Pin'}
 		</DropdownMenu.Item>
 		<DropdownMenu.Item onclick={toggleFavorite}>
-			<Star class="mr-2 h-4 w-4" />{note.isFavorite ? 'Unfavorite' : 'Favorite'}
+			<Star class="mr-2 size-3!" />{note.isFavorite ? 'Unfavorite' : 'Favorite'}
 		</DropdownMenu.Item>
 		<DropdownMenu.Separator />
-		<DropdownMenu.Item onclick={deleteNote} class="text-red-600">
-			<Trash2 class="mr-2 h-4 w-4" />Delete
+		<DropdownMenu.Item onclick={deleteNote} class="text-destructive">
+			<Trash2 class="mr-2 size-3!" />Delete
 		</DropdownMenu.Item>
 	</DropdownMenu.Content>
 </DropdownMenu.Root>

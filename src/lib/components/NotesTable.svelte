@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { db } from '$lib/db';
-	import { liveQuery } from 'dexie';
 	import { columns } from './notes/columns';
 	import {
 		type ColumnFiltersState,
@@ -18,10 +16,12 @@
 	import { Input } from '$lib/components/ui/input';
 	import { goto } from '$app/navigation';
 	import { Pin, Star } from '@lucide/svelte';
+	import type { Observable } from 'dexie';
+	import type { Note } from '$lib/db';
 
-	let notes = liveQuery(() => db.notes.toArray());
+	let { notes } = $props<{ notes: Observable<Note[]> }>();
 
-	const notas = $derived($notes || []);
+	const derivedNotes = $derived($notes || []);
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 	let sorting = $state<SortingState>([]);
@@ -30,7 +30,7 @@
 
 	const table = createSvelteTable({
 		get data() {
-			return notas;
+			return derivedNotes;
 		},
 		columns,
 		getCoreRowModel: getCoreRowModel(),
@@ -83,38 +83,38 @@
 </script>
 
 <div>
-	<div class="flex items-center gap-4 py-4">
+	<div class="flex justify-between gap-4 py-4">
 		<Input
 			placeholder="Filter titles..."
 			value={table?.getColumn('title')?.getFilterValue() as string}
 			onchange={(e) => table?.getColumn('title')?.setFilterValue(e.currentTarget.value)}
 			oninput={(e) => table?.getColumn('title')?.setFilterValue(e.currentTarget.value)}
-			class="max-w-sm"
+			class="h-8 max-w-sm text-xs! placeholder:text-xs"
 		/>
 
-		<div class="flex gap-2">
+		<div class="flex flex-1 flex-row justify-end gap-1 text-xs">
 			<Button
 				variant={table?.getColumn('isPinned')?.getFilterValue() ? 'default' : 'outline'}
 				size="sm"
+				class="aspect-square h-full"
 				onclick={() => {
 					const column = table?.getColumn('isPinned');
 					column?.setFilterValue(column?.getFilterValue() ? null : true);
 				}}
 			>
-				<Pin class="mr-2 h-4 w-4" />
-				Pinned
+				<Pin class="size-3!" />
 			</Button>
 
 			<Button
 				variant={table?.getColumn('isFavorite')?.getFilterValue() ? 'default' : 'outline'}
 				size="sm"
+				class="aspect-square h-full"
 				onclick={() => {
 					const column = table?.getColumn('isFavorite');
 					column?.setFilterValue(column?.getFilterValue() ? null : true);
 				}}
 			>
-				<Star class="mr-2 h-4 w-4" />
-				Favorites
+				<Star class="size-3!" />
 			</Button>
 		</div>
 	</div>
@@ -123,7 +123,7 @@
 		<Table.Root>
 			<Table.Header>
 				{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
-					<Table.Row>
+					<Table.Row class="bg-muted/30 text-xs">
 						{#each headerGroup.headers as header (header.id)}
 							<Table.Head>
 								{#if !header.isPlaceholder}
@@ -142,7 +142,7 @@
 					<Table.Row
 						data-state={row.getIsSelected() && 'selected'}
 						onclick={() => goto(`/${row.original.id}`)}
-						class="cursor-pointer"
+						class="cursor-pointer text-xs"
 					>
 						{#each row.getVisibleCells() as cell (cell.id)}
 							<Table.Cell>
@@ -152,7 +152,9 @@
 					</Table.Row>
 				{:else}
 					<Table.Row>
-						<Table.Cell colspan={columns.length} class="h-24 text-center">No results.</Table.Cell>
+						<Table.Cell colspan={columns.length} class="h-24 text-center text-xs"
+							>No results.</Table.Cell
+						>
 					</Table.Row>
 				{/each}
 			</Table.Body>
