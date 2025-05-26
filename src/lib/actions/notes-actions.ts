@@ -1,4 +1,5 @@
 import type { Note, db as database } from '$lib/db';
+import { generateId } from '$lib/utils';
 
 export const createNote = (documentId: string, db: typeof database) => {
 	try {
@@ -61,4 +62,11 @@ export const updateLastEdited = async (noteId: string, db: typeof database) => {
 	} catch (error) {
 		console.error('Failed to update last edited timestamp:', error);
 	}
+};
+
+export const createNoteWithContent = (content: string) => {
+	const newDocId = generateId();
+	sessionStorage.setItem(`import-${newDocId}`, content);
+
+	return newDocId;
 };

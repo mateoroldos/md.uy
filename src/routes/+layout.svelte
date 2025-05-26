@@ -14,6 +14,9 @@
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { NANOID_LENGTH } from '$lib/constants';
 	import type { LayoutProps } from './$types';
+	import { getNoteIdByTitle } from '$lib/queries/notes-queries';
+	import { db } from '$lib/db';
+	import { createNoteWithContent } from '$lib/actions/notes-actions';
 
 	let { children, data }: LayoutProps = $props();
 	const { notes } = data;
@@ -33,7 +36,7 @@
 		if (isValidId(documentId.trim())) goto(`/${documentId}`);
 	}
 
-	function createTodayNote() {
+	async function handleTodayNote() {
 		const today = new Date();
 		const months = [
 			'January',
@@ -52,11 +55,17 @@
 		const day = today.getDate();
 		const month = months[today.getMonth()];
 		const year = today.getFullYear();
-		const content = `# ${day} of ${month}, ${year}`;
+		const title = `${day} of ${month}, ${year}`;
 
-		const newDocId = generateId();
-		sessionStorage.setItem(`import-${newDocId}`, content);
-		goto(`/${newDocId}`);
+		const todayNoteId = await getNoteIdByTitle(db, title);
+
+		if (todayNoteId) {
+			goto(`/${todayNoteId}`);
+			return;
+		}
+
+		const newNoteId = createNoteWithContent(`# ${title}`);
+		goto(`/${newNoteId}`);
 	}
 
 	async function handleFileImport(event: Event) {
@@ -108,7 +117,7 @@
 					variant="outline"
 					size="sm"
 					class="flex items-center gap-1 text-xs"
-					onclick={createTodayNote}
+					onclick={handleTodayNote}
 				>
 					<Calendar class="size-3!" />
 					<span>Today's Note</span>

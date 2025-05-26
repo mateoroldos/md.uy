@@ -31,3 +31,8 @@ export const getNotesLive = (db: typeof database) => {
 		}
 	});
 };
+
+export const getNoteIdByTitle = async (db: typeof database, title: string) => {
+	const note = await db.notes.where('title').equals(title).first();
+	return note?.id;
+};
