@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import { onDestroy, onMount } from 'svelte';
 	import Editor from '$lib/components/Editor.svelte';
+	import Presentation from '$lib/components/Presentation.svelte';
 	import { ActiveUser } from '$lib/stores/active-user.svelte';
 	import ConnectedUsers from '$lib/components/ConnectedUsers.svelte';
 	import ShareButton from '$lib/components/ShareButton.svelte';
@@ -70,8 +71,11 @@
 <div
 	class="col-span-2 row-start-3 mx-auto flex h-full w-full flex-col items-start gap-4 overflow-hidden rounded md:col-span-1 md:col-start-2 md:row-start-2"
 >
-	<Editor provider={data.provider} ytext={data.ytext} isVisible={viewMode === 'edit'} />
-	<Preview ytext={data.ytext} isVisible={viewMode === 'preview'} />
+	{#key page.params.id}
+		<Editor provider={data.provider} ytext={data.ytext} isVisible={viewMode === 'edit'} />
+		<Preview ytext={data.ytext} isVisible={viewMode === 'preview'} />
+		<Presentation ytext={data.ytext} isVisible={viewMode === 'presentation'} />
+	{/key}
 </div>
 <div class="col-start-3 row-start-2 hidden w-full items-start gap-8 md:flex md:flex-col">
 	<Profile {activeUser} />

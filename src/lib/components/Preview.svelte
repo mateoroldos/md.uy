@@ -1,21 +1,10 @@
 <script lang="ts">
-	import { marked } from 'marked';
+	import { markedAction } from '$lib/editor/marked-action.svelte';
 	import * as Y from 'yjs';
 
 	let { ytext, isVisible } = $props<{ ytext: Y.Text; isVisible: boolean }>();
 
-	let isEmpty = $state(!ytext.length);
-
-	const markedAction = (node: HTMLElement) => {
-		ytext.observe(() => {
-			node.innerHTML = marked
-				.use({
-					gfm: true,
-					breaks: true
-				})
-				.parse(ytext.toString()) as string;
-		});
-	};
+	let isEmpty = $derived(!ytext.length);
 
 	ytext.observe(() => {
 		isEmpty = !ytext.length;
@@ -29,7 +18,9 @@
 		</div>
 	{/if}
 	<div
-		use:markedAction
+		use:markedAction={{
+			ytext
+		}}
 		class="prose dark:prose-invert h-full min-w-full overflow-auto px-8 py-6 break-words"
 	></div>
 </div>

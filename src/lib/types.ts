@@ -3,4 +3,4 @@ export interface User {
 	color: string;
 }
 
-export type EditorMode = 'edit' | 'preview';
+export type EditorMode = 'edit' | 'preview' | 'presentation';

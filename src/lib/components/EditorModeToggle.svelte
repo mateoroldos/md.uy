@@ -8,7 +8,7 @@
 		viewMode: EditorMode;
 	}>();
 
-	function toggleEditorMode(mode: 'edit' | 'preview') {
+	function toggleEditorMode(mode: EditorMode) {
 		viewMode = mode;
 	}
 </script>
@@ -31,5 +31,14 @@
 	>
 		Preview
 		<KeyboardShortcut shortcut={KEYMAP['PREVIEW_MODE']} />
+	</Button>
+	<Button
+		variant={viewMode !== 'presentation' ? 'ghost' : 'secondary'}
+		size="sm"
+		onclick={() => toggleEditorMode('presentation')}
+		shortcut={KEYMAP['PRESENTATION_MODE']}
+	>
+		Present
+		<KeyboardShortcut shortcut={KEYMAP['PRESENTATION_MODE']} />
 	</Button>
 </div>

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/state';
 	import { codemirror } from '$lib/editor/codemirror-action.svelte';
 	import type { WebrtcProvider } from 'y-webrtc';
 	import * as Y from 'yjs';
@@ -23,14 +22,12 @@
 			Start typing to add content...
 		</span>
 	{/if}
-	{#key page.params.id}
-		<div
-			use:codemirror={{
-				provider,
-				ytext,
-				isVisible
-			}}
-			class="h-full focus:outline-none"
-		></div>
-	{/key}
+	<div
+		use:codemirror={{
+			provider,
+			ytext,
+			isVisible
+		}}
+		class="h-full focus:outline-none"
+	></div>
 </div>

@@ -5,7 +5,7 @@ export interface Shortcut {
 	control?: boolean;
 }
 
-type Actions = 'EDIT_MODE' | 'PREVIEW_MODE' | 'COPY_URL' | 'COPY_CONTENT' | 'DOWNLOAD_CONTENT';
+type Actions = 'EDIT_MODE' | 'PREVIEW_MODE' | 'PRESENTATION_MODE' | 'COPY_URL' | 'COPY_CONTENT' | 'DOWNLOAD_CONTENT';
 
 export const KEYMAP: Record<Actions, Shortcut> = {
 	EDIT_MODE: {
@@ -16,6 +16,12 @@ export const KEYMAP: Record<Actions, Shortcut> = {
 	},
 	PREVIEW_MODE: {
 		code: 'KeyP',
+		alt: false,
+		shift: false,
+		control: true
+	},
+	PRESENTATION_MODE: {
+		code: 'KeyS',
 		alt: false,
 		shift: false,
 		control: true
@@ -33,7 +39,7 @@ export const KEYMAP: Record<Actions, Shortcut> = {
 		control: true
 	},
 	DOWNLOAD_CONTENT: {
-		code: 'KeyS',
+		code: 'KeyD',
 		alt: false,
 		shift: false,
 		control: true
