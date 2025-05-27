@@ -23,12 +23,11 @@ export const load: PageLoad = async ({ params }) => {
 		createNote(noteId, db);
 	}
 
-	const { ydoc, provider, ytext, cleanup } = initYjs(noteId);
+	const { ydoc, ytext, cleanup } = initYjs(noteId);
 
 	return {
 		noteId,
 		ydoc,
-		provider,
 		ytext,
 		cleanup
 	};

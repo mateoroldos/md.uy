@@ -5,21 +5,27 @@ import { EditorView, basicSetup } from 'codemirror';
 import { EditorState } from '@codemirror/state';
 import { markdown } from '@codemirror/lang-markdown';
 
-export const initCodemirror = (node: HTMLElement, ytext: Y.Text, provider: WebrtcProvider) => {
+export const initCodemirror = (
+	node: HTMLElement,
+	ytext: Y.Text,
+	provider: WebrtcProvider | null
+) => {
 	let editorView: EditorView;
 
 	try {
 		const undoManager = new Y.UndoManager(ytext);
 
+		const extensions = [basicSetup, markdown(), theme, EditorView.lineWrapping];
+
+		if (provider) {
+			extensions.push(yCollab(ytext, provider.awareness, { undoManager }));
+		} else {
+			extensions.push(yCollab(ytext, null, { undoManager }));
+		}
+
 		const editorState = EditorState.create({
 			doc: ytext.toString(),
-			extensions: [
-				basicSetup,
-				markdown(),
-				yCollab(ytext, provider.awareness, { undoManager }),
-				theme,
-				EditorView.lineWrapping
-			]
+			extensions
 		});
 
 		editorView = new EditorView({
