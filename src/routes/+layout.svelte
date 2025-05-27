@@ -60,8 +60,7 @@
 		const todayNoteId = await getNoteIdByTitle(db, title);
 
 		if (todayNoteId) {
-			goto(`/${todayNoteId}`);
-			return;
+			return goto(`/${todayNoteId}`);
 		}
 
 		const newNoteId = createNoteWithContent(`# ${title}`);
@@ -197,10 +196,10 @@
 				class="hover:text-foreground duration-100">github</a
 			>
 		</div>
-		<span class="text-foreground/50 text-[0.7rem]"
+		<span class="text-foreground/50 hidden text-[0.7rem] md:block"
 			>md.uy is in an experimental state, please download important notes.</span
 		>
-		<div class="flex items-center gap-5">
+		<div class="hidden items-center gap-5 md:flex">
 			<OnlineStatus />
 			<PWAStatus />
 		</div>
