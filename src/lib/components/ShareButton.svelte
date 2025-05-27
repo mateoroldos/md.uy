@@ -26,6 +26,7 @@
 	let isGeneratingLink = $state(false);
 	let staticLinkGenerated = $state(false);
 	let staticLinkError = $state<string | null>(null);
+	let liveSyncUrl = $state('');
 
 	const MAX_NOTE_LENGTH = 2000; // Max length for static sharing
 
@@ -33,7 +34,14 @@
 		staticShareURL = '';
 		staticLinkGenerated = false;
 		staticLinkError = null;
+		updateLiveSyncUrl();
 		open = true;
+	}
+
+	function updateLiveSyncUrl() {
+		const url = new URL(page.url.href);
+		url.searchParams.set('sync', 'true');
+		liveSyncUrl = url.toString();
 	}
 
 	function handleTabChange(newTab: string) {
@@ -43,6 +51,8 @@
 			staticLinkGenerated = false;
 			staticShareURL = '';
 			staticLinkError = null;
+		} else if (newTab === 'live') {
+			updateLiveSyncUrl();
 		}
 	}
 
@@ -156,15 +166,15 @@
 									Anyone with this link can view and edit this note in real-time. All changes sync
 									automatically between devices.
 								</p>
-								<QrCode value={page.url.href} />
+								<QrCode value={liveSyncUrl} />
 
 								<div class="flex w-full items-center space-x-2">
 									<div class="relative grid flex-1 gap-2">
-										<Input readonly value={page.url.href} class="w-full pr-10 text-xs" />
+										<Input readonly value={liveSyncUrl} class="w-full pr-10 text-xs" />
 										<Button
 											variant="ghost"
 											size="icon"
-											onclick={() => copyToClipboard(page.url.href)}
+											onclick={() => copyToClipboard(liveSyncUrl)}
 											title="Copy to clipboard"
 											class="absolute top-1/2 right-1.5 -translate-y-1/2 transform"
 										>
