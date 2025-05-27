@@ -4,7 +4,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import Editor from '$lib/components/Editor.svelte';
 	import Presentation from '$lib/components/Presentation.svelte';
-	import { ActiveUser } from '$lib/stores/active-user.svelte';
+
 	import ConnectedUsers from '$lib/components/ConnectedUsers.svelte';
 	import ShareButton from '$lib/components/ShareButton.svelte';
 	import CopyButton from '$lib/components/CopyButton.svelte';
@@ -22,8 +22,7 @@
 
 	let { data }: PageProps = $props();
 
-	const webrtcSync = new WebrtcSync(page.params.id, data.ydoc);
-	const activeUser = new ActiveUser('Anonymus', webrtcSync.provider);
+	const webrtcSync = new WebrtcSync(page.params.id, data.ydoc, 'Anonymous');
 
 	onMount(() => {
 		const importKey = `import-${page.params.id}`;
@@ -100,8 +99,8 @@
 	{/key}
 </div>
 <div class="col-start-3 row-start-2 hidden w-full items-start gap-8 md:flex md:flex-col">
-	<Profile {activeUser} />
+	<Profile activeUser={webrtcSync.activeUser} />
 	{#if webrtcSync.provider}
-		<ConnectedUsers provider={webrtcSync.provider} {activeUser} />
+		<ConnectedUsers provider={webrtcSync.provider} activeUser={webrtcSync.activeUser} />
 	{/if}
 </div>
