@@ -4,7 +4,7 @@ import { initCodemirror } from '../editor/initCodemirror';
 
 interface CodeMirrorOptions {
 	ytext: Y.Text;
-	provider: WebrtcProvider;
+	provider: WebrtcProvider | null;
 	isVisible: boolean;
 }
 
@@ -12,7 +12,7 @@ export const codemirror = (
 	node: HTMLElement,
 	{ ytext, provider, isVisible }: CodeMirrorOptions
 ) => {
-	const { editorView } = initCodemirror(node, ytext, provider);
+	let { editorView } = initCodemirror(node, ytext, provider);
 
 	let isVisibleState = $state(isVisible);
 
@@ -25,6 +25,12 @@ export const codemirror = (
 	return {
 		update(options: CodeMirrorOptions) {
 			isVisibleState = options.isVisible;
+
+			if (editorView) {
+				editorView.destroy();
+			}
+
+			editorView = initCodemirror(node, ytext, provider).editorView;
 		},
 		destroy: () => {
 			editorView.destroy();

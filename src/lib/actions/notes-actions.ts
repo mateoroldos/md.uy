@@ -18,6 +18,7 @@ export const createNote = (documentId: string, db: typeof database) => {
 export const deleteNote = async (noteId: string, db: typeof database) => {
 	try {
 		await db.notes.delete(noteId);
+		await deleteYjsData(noteId);
 	} catch (error) {
 		console.error('Failed to delete note:', error);
 	}
@@ -69,4 +70,25 @@ export const createNoteWithContent = (content: string) => {
 	sessionStorage.setItem(`import-${newDocId}`, content);
 
 	return newDocId;
+};
+
+export const deleteYjsData = async (documentId: string) => {
+	try {
+		const request = indexedDB.deleteDatabase(documentId);
+
+		return new Promise<void>((resolve, reject) => {
+			request.onerror = () => {
+				console.error(`Failed to delete YJS data for document: ${documentId}`);
+				reject(new Error(`Failed to delete YJS data for document: ${documentId}`));
+			};
+
+			request.onsuccess = () => {
+				console.log(`Successfully deleted YJS data for document: ${documentId}`);
+				resolve();
+			};
+		});
+	} catch (error) {
+		console.error('Failed to delete YJS data:', error);
+		throw error;
+	}
 };

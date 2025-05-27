@@ -4,7 +4,7 @@
 	import * as Y from 'yjs';
 
 	let { provider, ytext, isVisible } = $props<{
-		provider: WebrtcProvider;
+		provider: WebrtcProvider | null;
 		ytext: Y.Text;
 		isVisible: boolean;
 	}>();

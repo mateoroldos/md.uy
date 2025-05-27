@@ -4,7 +4,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import Editor from '$lib/components/Editor.svelte';
 	import Presentation from '$lib/components/Presentation.svelte';
-	import { ActiveUser } from '$lib/stores/active-user.svelte';
+
 	import ConnectedUsers from '$lib/components/ConnectedUsers.svelte';
 	import ShareButton from '$lib/components/ShareButton.svelte';
 	import CopyButton from '$lib/components/CopyButton.svelte';
@@ -16,12 +16,13 @@
 	import debounce from 'debounce';
 	import { updateLastEdited, updateTitle } from '$lib/actions/notes-actions';
 	import type { PageProps } from './$types';
+	import { WebrtcSync } from '$lib/stores/webrtc-sync.svelte';
 
 	let viewMode = $state<EditorMode>('edit');
 
 	let { data }: PageProps = $props();
 
-	const activeUser = new ActiveUser('Anonymus', data.provider);
+	const webrtcSync = new WebrtcSync(page.params.id, data.ydoc, 'Anonymous');
 
 	onMount(() => {
 		const importKey = `import-${page.params.id}`;
@@ -49,8 +50,24 @@
 		}, 500)
 	);
 
+	let currentId = $state<string>(page.params.id);
+
+	$effect(() => {
+		const newId = page.params.id;
+		if (newId !== currentId) {
+			data.cleanup();
+			if (webrtcSync.provider) {
+				webrtcSync.provider.destroy();
+			}
+			currentId = newId;
+		}
+	});
+
 	onDestroy(() => {
 		data.cleanup();
+		if (webrtcSync.provider) {
+			webrtcSync.provider.destroy();
+		}
 	});
 </script>
 
@@ -65,19 +82,25 @@
 	<div class="flex flex-row items-center gap-1 md:gap-2">
 		<CopyButton ydoc={data.ydoc} />
 		<DownloadButton ydoc={data.ydoc} />
-		<ShareButton />
+		<ShareButton
+			isSyncing={webrtcSync.isSyncing}
+			toggleSync={webrtcSync.toggleSync}
+			ytext={data.ytext}
+		/>
 	</div>
 </div>
 <div
 	class="col-span-2 row-start-3 mx-auto flex h-full w-full flex-col items-start gap-4 overflow-hidden rounded md:col-span-1 md:col-start-2 md:row-start-2"
 >
 	{#key page.params.id}
-		<Editor provider={data.provider} ytext={data.ytext} isVisible={viewMode === 'edit'} />
+		<Editor provider={webrtcSync.provider} ytext={data.ytext} isVisible={viewMode === 'edit'} />
 		<Preview ytext={data.ytext} isVisible={viewMode === 'preview'} />
 		<Presentation ytext={data.ytext} isVisible={viewMode === 'presentation'} />
 	{/key}
 </div>
 <div class="col-start-3 row-start-2 hidden w-full items-start gap-8 md:flex md:flex-col">
-	<Profile {activeUser} />
-	<ConnectedUsers provider={data.provider} {activeUser} />
+	<Profile activeUser={webrtcSync.activeUser} />
+	{#if webrtcSync.provider}
+		<ConnectedUsers provider={webrtcSync.provider} activeUser={webrtcSync.activeUser} />
+	{/if}
 </div>

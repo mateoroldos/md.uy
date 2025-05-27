@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { ActiveUser } from '$lib/stores/active-user.svelte';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import type { User } from '$lib/types';
 
-	let { activeUser = $bindable() } = $props<{ activeUser: ActiveUser }>();
+	let { activeUser = $bindable() } = $props<{ activeUser: User }>();
 </script>
 
 <Dialog.Root>
@@ -13,9 +13,9 @@
 		<div class="flex items-center gap-2">
 			<div
 				class="border-foreground h-3 w-3 rounded-full border"
-				style:background-color={activeUser.activeUser.color}
+				style:background-color={activeUser.color}
 			></div>
-			<span>{activeUser.activeUser.name}</span>
+			<span>{activeUser.name}</span>
 		</div>
 	</Dialog.Trigger>
 	<Dialog.Content class="sm:max-w-[425px]">
@@ -27,7 +27,7 @@
 				<Label for="name" class="text-right">Name</Label>
 				<Input
 					id="name"
-					bind:value={activeUser.activeUser.name}
+					bind:value={activeUser.name}
 					placeholder="Enter your name"
 					class="col-span-4"
 				/>
@@ -38,10 +38,10 @@
 					<input
 						type="color"
 						id="color"
-						bind:value={activeUser.activeUser.color}
+						bind:value={activeUser.color}
 						class="h-8 w-8 cursor-pointer rounded"
 					/>
-					<span class="font-mono text-sm">{activeUser.activeUser.color}</span>
+					<span class="font-mono text-sm">{activeUser.color}</span>
 				</div>
 			</div>
 		</div>
