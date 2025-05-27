@@ -13,7 +13,7 @@
 
 	async function deleteNote(e: MouseEvent) {
 		e.stopPropagation();
-		await deleteNoteAction(note, db);
+		await deleteNoteAction(note.id, db);
 	}
 
 	async function togglePin(e: MouseEvent) {

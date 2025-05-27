@@ -195,7 +195,7 @@
 									<p class="text-muted-foreground mb-3 text-sm">
 										Enable live sync to collaborate in real-time with anyone who has the link.
 									</p>
-									<Button onclick={toggleSync} class="gap-2">
+									<Button onclick={toggleSync} class="gap-2" size="sm">
 										<RefreshCw class="size-4" />
 										Start live sync
 									</Button>
@@ -212,13 +212,12 @@
 						<p class="text-muted-foreground text-center text-sm">
 							Share a static version of this note. Anyone with this link can copy the note to their
 							own md.uy instance. Changes won't sync between different copies.
-							<span class="mt-1 block text-xs">Only available for notes under 2KB</span>
 						</p>
 						<Button
-							variant="secondary"
 							class="mb-2 gap-2"
 							onclick={generateStaticLink}
 							disabled={isGeneratingLink || staticLinkGenerated}
+							size="sm"
 						>
 							<Link class="size-4" />
 							{#if isGeneratingLink}
