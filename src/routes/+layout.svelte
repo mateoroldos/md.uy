@@ -111,7 +111,7 @@
 			{/if}
 		</div>
 		{@render children()}
-		<div class="row-start-2 flex flex-col px-3 py-2">
+		<div class="row-start-2 hidden flex-col px-3 py-2 md:flex">
 			<div class="mb-4">
 				<Button
 					variant="outline"
@@ -145,9 +145,11 @@
 		<div
 			class="col-start-2 row-start-1 flex items-center justify-end gap-2 py-2 md:col-start-3 md:px-3"
 		>
-			<GitHubStars />
+			<div class="hidden md:block">
+				<GitHubStars />
+			</div>
 			<ThemeToggle />
-			<div class="relative ml-1">
+			<div class="relative ml-1 hidden md:block">
 				<Input
 					class="h-7 w-32 pr-9 font-mono text-xs md:text-xs"
 					bind:value={documentId}
@@ -180,7 +182,7 @@
 		</div>
 	</div>
 	<footer
-		class="text-foreground/50 border-t-border/40! mt-2 flex items-center justify-between gap-2 border-t px-3 pt-1.5 pb-2 font-mono text-[0.7rem] leading-[0.7] tracking-tight"
+		class="text-foreground/50 border-t-border/40! mt-2 flex flex-col items-center justify-between gap-4 border-t px-3 pt-1.5 pb-2 font-mono text-[0.7rem] leading-[0.7] tracking-tight lg:flex-row"
 	>
 		<div class="flex items-center gap-2">
 			<a href="/about" class="hover:text-foreground duration-100">about</a>

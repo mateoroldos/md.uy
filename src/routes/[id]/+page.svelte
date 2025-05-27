@@ -79,9 +79,13 @@
 	class="col-span-2 row-start-2 mx-auto flex w-full flex-row flex-wrap items-center justify-between gap-3 md:col-span-1 md:col-start-2 md:row-start-1"
 >
 	<EditorModeToggle bind:viewMode />
-	<div class="flex flex-row items-center gap-1 md:gap-2">
-		<CopyButton ydoc={data.ydoc} />
-		<DownloadButton ydoc={data.ydoc} />
+	<div
+		class="mb-1 flex w-full flex-row items-center justify-between gap-1 md:mb-0 md:w-fit md:justify-start md:gap-2"
+	>
+		<div>
+			<CopyButton ydoc={data.ydoc} />
+			<DownloadButton ydoc={data.ydoc} />
+		</div>
 		<ShareButton
 			isSyncing={webrtcSync.isSyncing}
 			toggleSync={webrtcSync.toggleSync}
