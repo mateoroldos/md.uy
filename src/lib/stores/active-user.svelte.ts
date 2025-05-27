@@ -10,7 +10,7 @@ export class ActiveUser {
 		color: ''
 	});
 
-	constructor(username: string = 'Anonymous', provider: WebrtcProvider) {
+	constructor(username: string = 'Anonymous', provider: WebrtcProvider | null) {
 		this.activeUser = {
 			name: username,
 			color: randomColor()
@@ -23,10 +23,12 @@ export class ActiveUser {
 
 		$effect(() => {
 			localStorage.setItem(ACTIVE_USER_KEY, this.serialize(this.activeUser));
-			provider.awareness.setLocalStateField('user', {
-				name: this.activeUser.name,
-				color: this.activeUser.color
-			});
+			if (provider) {
+				provider.awareness.setLocalStateField('user', {
+					name: this.activeUser.name,
+					color: this.activeUser.color
+				});
+			}
 		});
 	}
 

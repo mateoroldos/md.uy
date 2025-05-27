@@ -22,8 +22,8 @@
 
 	let { data }: PageProps = $props();
 
-	// const activeUser = new ActiveUser('Anonymus', data.provider);
 	const webrtcSync = new WebrtcSync(page.params.id, data.ydoc);
+	const activeUser = new ActiveUser('Anonymus', webrtcSync.provider);
 
 	onMount(() => {
 		const importKey = `import-${page.params.id}`;
@@ -83,7 +83,11 @@
 	<div class="flex flex-row items-center gap-1 md:gap-2">
 		<CopyButton ydoc={data.ydoc} />
 		<DownloadButton ydoc={data.ydoc} />
-		<ShareButton isSyncing={webrtcSync.isSyncing} toggleSync={webrtcSync.toggleSync} />
+		<ShareButton
+			isSyncing={webrtcSync.isSyncing}
+			toggleSync={webrtcSync.toggleSync}
+			ytext={data.ytext}
+		/>
 	</div>
 </div>
 <div
@@ -96,6 +100,8 @@
 	{/key}
 </div>
 <div class="col-start-3 row-start-2 hidden w-full items-start gap-8 md:flex md:flex-col">
-	<!-- <Profile {activeUser} /> -->
-	<!-- <ConnectedUsers provider={provider} {activeUser} /> -->
+	<Profile {activeUser} />
+	{#if webrtcSync.provider}
+		<ConnectedUsers provider={webrtcSync.provider} {activeUser} />
+	{/if}
 </div>

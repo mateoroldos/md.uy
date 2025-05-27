@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { onDestroy } from 'svelte';
-	import { Check, Copy, Share2, Globe, Link, RefreshCw } from '@lucide/svelte';
+	import { Check, Copy, Share2, Globe, Link, RefreshCw, AlertCircle } from '@lucide/svelte';
 	import QrCode from './QrCode.svelte';
 	import { fly } from 'svelte/transition';
 	import KeyboardShortcut from './KeyboardShortcut.svelte';
@@ -9,27 +9,41 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Input } from '$lib/components/ui/input';
+	import * as Y from 'yjs';
+	import { page } from '$app/state';
 
-	let { isSyncing, toggleSync } = $props<{
+	let { isSyncing, toggleSync, ytext } = $props<{
 		isSyncing: boolean;
 		toggleSync: () => void;
+		ytext: Y.Text;
 	}>();
 
 	let shared = $state(false);
 	let open = $state(false);
 	let timeout: ReturnType<typeof setTimeout>;
-	let currentURL = $state('');
 	let staticShareURL = $state('');
 	let activeTab = $state('live');
+	let isGeneratingLink = $state(false);
+	let staticLinkGenerated = $state(false);
+	let staticLinkError = $state<string | null>(null);
+
+	const MAX_NOTE_LENGTH = 2000; // Max length for static sharing
 
 	function openShareDialog() {
-		currentURL = window.location.href;
-		staticShareURL = window.location.href + '?static=true'; // Placeholder for static share URL
+		staticShareURL = '';
+		staticLinkGenerated = false;
+		staticLinkError = null;
 		open = true;
 	}
 
 	function handleTabChange(newTab: string) {
 		activeTab = newTab;
+
+		if (newTab === 'static') {
+			staticLinkGenerated = false;
+			staticShareURL = '';
+			staticLinkError = null;
+		}
 	}
 
 	async function copyToClipboard(url: string) {
@@ -43,6 +57,32 @@
 			}, 800);
 		} catch (err) {
 			console.error('Failed to copy URL:', err);
+		}
+	}
+
+	function generateStaticLink() {
+		try {
+			isGeneratingLink = true;
+			staticLinkError = null;
+
+			const content = ytext.toString();
+
+			if (content.length > MAX_NOTE_LENGTH) {
+				staticLinkError =
+					'Note is too large for static sharing. Only notes under 2KB are supported.';
+				isGeneratingLink = false;
+				return;
+			}
+
+			// Encode content for URL
+			const encodedContent = encodeURIComponent(content);
+			staticShareURL = `${window.location.origin}/import?content=${encodedContent}`;
+			staticLinkGenerated = true;
+			isGeneratingLink = false;
+		} catch (error) {
+			console.error('Failed to generate static link:', error);
+			staticLinkError = 'Failed to generate link';
+			isGeneratingLink = false;
 		}
 	}
 
@@ -116,15 +156,15 @@
 									Anyone with this link can view and edit this note in real-time. All changes sync
 									automatically between devices.
 								</p>
-								<QrCode value={currentURL} />
+								<QrCode value={page.url.href} />
 
 								<div class="flex w-full items-center space-x-2">
 									<div class="relative grid flex-1 gap-2">
-										<Input readonly value={currentURL} class="w-full pr-10 text-xs" />
+										<Input readonly value={page.url.href} class="w-full pr-10 text-xs" />
 										<Button
 											variant="ghost"
 											size="icon"
-											onclick={() => copyToClipboard(currentURL)}
+											onclick={() => copyToClipboard(page.url.href)}
 											title="Copy to clipboard"
 											class="absolute top-1/2 right-1.5 -translate-y-1/2 transform"
 										>
@@ -162,32 +202,57 @@
 						<p class="text-muted-foreground text-center text-sm">
 							Share a static version of this note. Anyone with this link can copy the note to their
 							own md.uy instance. Changes won't sync between different copies.
+							<span class="mt-1 block text-xs">Only available for notes under 2KB</span>
 						</p>
+						<Button
+							variant="secondary"
+							class="mb-2 gap-2"
+							onclick={generateStaticLink}
+							disabled={isGeneratingLink || staticLinkGenerated}
+						>
+							<Link class="size-4" />
+							{#if isGeneratingLink}
+								Generating...
+							{:else if staticLinkGenerated}
+								Link generated
+							{:else}
+								Generate static link
+							{/if}
+						</Button>
 
-						<QrCode value={staticShareURL} />
-
-						<div class="flex w-full items-center space-x-2">
-							<div class="relative grid flex-1 gap-2">
-								<Input readonly value={staticShareURL} class="w-full pr-10 text-xs" />
-								<Button
-									variant="ghost"
-									size="icon"
-									onclick={() => copyToClipboard(staticShareURL)}
-									title="Copy to clipboard"
-									class="absolute top-1/2 right-1.5 -translate-y-1/2 transform"
-								>
-									{#if shared}
-										<div in:fly={{ duration: 300, y: -5 }}>
-											<Check class="size-3 text-green-500" />
-										</div>
-									{:else}
-										<div in:fly={{ duration: 300, x: 5 }}>
-											<Copy class="size-3" />
-										</div>
-									{/if}
-								</Button>
+						{#if staticLinkError}
+							<div class="text-destructive mb-2 flex items-center gap-2">
+								<AlertCircle class="size-4" />
+								<span class="text-sm">{staticLinkError}</span>
 							</div>
-						</div>
+						{/if}
+
+						{#if staticLinkGenerated}
+							<QrCode value={staticShareURL} />
+
+							<div class="flex w-full items-center space-x-2">
+								<div class="relative grid flex-1 gap-2">
+									<Input readonly value={staticShareURL} class="w-full pr-10" />
+									<Button
+										variant="ghost"
+										size="icon"
+										onclick={() => copyToClipboard(staticShareURL)}
+										title="Copy to clipboard"
+										class="absolute top-1/2 right-1.5 -translate-y-1/2 transform"
+									>
+										{#if shared}
+											<div in:fly={{ duration: 300, y: -5 }}>
+												<Check class="size-3 text-green-500" />
+											</div>
+										{:else}
+											<div in:fly={{ duration: 300, x: 5 }}>
+												<Copy class="size-3" />
+											</div>
+										{/if}
+									</Button>
+								</div>
+							</div>
+						{/if}
 					</div>
 				</div>
 			</Tabs.Content>
