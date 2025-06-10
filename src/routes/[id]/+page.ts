@@ -23,7 +23,7 @@ export const load: PageLoad = async ({ params }) => {
 		createNote(noteId, db);
 	}
 
-	const { ydoc, ytext, cleanup } = initYjs(noteId);
+	const { ydoc, ytext, cleanup } = await initYjs(noteId);
 
 	return {
 		noteId,
