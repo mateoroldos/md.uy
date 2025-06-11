@@ -3,6 +3,8 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
+const host = process.env.TAURI_DEV_HOST;
+
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
@@ -10,7 +12,8 @@ export default defineConfig({
 		SvelteKitPWA({
 			registerType: 'autoUpdate',
 			srcDir: './src',
-			mode: 'development',
+			// Use 'production' for builds, 'development' for dev
+			mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 			strategies: 'generateSW',
 			injectRegister: 'auto',
 			filename: undefined,
@@ -44,11 +47,39 @@ export default defineConfig({
 					}
 				]
 			},
-			injectManifest: {
-				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2}']
-			},
 			workbox: {
-				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2}']
+				// Updated glob patterns for static adapter output
+				globPatterns: [
+					'**/*.{js,css,html,ico,png,svg,webp,woff,woff2}',
+					'_app/immutable/**/*.{js,css}'
+				],
+				// Exclude service worker files from being cached
+				globIgnores: ['**/sw.js', '**/workbox-*.js'],
+				// Cache strategy for your app
+				runtimeCaching: [
+					{
+						urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+						handler: 'CacheFirst',
+						options: {
+							cacheName: 'google-fonts-cache',
+							expiration: {
+								maxEntries: 10,
+								maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+							}
+						}
+					},
+					{
+						urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+						handler: 'CacheFirst',
+						options: {
+							cacheName: 'gstatic-fonts-cache',
+							expiration: {
+								maxEntries: 10,
+								maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+							}
+						}
+					}
+				]
 			},
 			devOptions: {
 				enabled: true,
@@ -56,5 +87,37 @@ export default defineConfig({
 				type: 'module'
 			}
 		})
-	]
+	],
+	// Tauri-specific configuration
+	clearScreen: false,
+	server: {
+		port: 5173,
+		// Tauri expects a fixed port, fail if that port is not available
+		// prevent vite from obscuring rust errors
+		strictPort: true,
+		// if the host Tauri is expecting is set, use it
+		host: host || false,
+		hmr: host
+			? {
+					protocol: 'ws',
+					host,
+					port: 1421
+				}
+			: undefined,
+
+		watch: {
+			// tell vite to ignore watching `src-tauri`
+			ignored: ['**/src-tauri/**']
+		}
+	},
+	// Env variables starting with the item of `envPrefix` will be exposed in tauri's source code through `import.meta.env`.
+	envPrefix: ['VITE_', 'TAURI_ENV_*'],
+	build: {
+		// Tauri uses Chromium on Windows and WebKit on macOS and Linux
+		target: process.env.TAURI_ENV_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
+		// don't minify for debug builds
+		minify: !process.env.TAURI_ENV_DEBUG ? 'esbuild' : false,
+		// produce sourcemaps for debug builds
+		sourcemap: !!process.env.TAURI_ENV_DEBUG
+	}
 });
