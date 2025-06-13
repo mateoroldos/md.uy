@@ -1,110 +1,94 @@
 <script lang="ts">
 	import Preview from '$lib/components/Preview.svelte';
 	import { page } from '$app/state';
-	import { onDestroy, onMount } from 'svelte';
 	import Editor from '$lib/components/Editor.svelte';
 	import Presentation from '$lib/components/Presentation.svelte';
-
-	import ConnectedUsers from '$lib/components/ConnectedUsers.svelte';
-	import ShareButton from '$lib/components/ShareButton.svelte';
 	import CopyButton from '$lib/components/CopyButton.svelte';
 	import DownloadButton from '$lib/components/DownloadButton.svelte';
 	import EditorModeToggle from '$lib/components/EditorModeToggle.svelte';
 	import type { EditorMode } from '$lib/types';
+	import FilenameEditButton from '$lib/components/FilenameEditButton.svelte';
+	import { noteMachine } from '$lib/machines/note-machine/note-machine';
+	import { useMachine, useSelector } from '@xstate/svelte';
+	import { goto } from '$app/navigation';
+	import ShareButton from '$lib/components/ShareButton.svelte';
 	import Profile from '$lib/components/Profile.svelte';
-	import { db } from '$lib/db';
-	import debounce from 'debounce';
-	import { updateLastEdited, updateTitle } from '$lib/actions/notes-actions';
-	import type { PageProps } from './$types';
-	import { WebrtcSync } from '$lib/stores/webrtc-sync.svelte';
+	import ConnectedUsers from '$lib/components/ConnectedUsers.svelte';
 
 	let viewMode = $state<EditorMode>('edit');
 
-	let { data }: PageProps = $props();
-
-	const webrtcSync = new WebrtcSync(page.params.id, data.ydoc, 'Anonymous');
-
-	onMount(() => {
-		const importKey = `import-${page.params.id}`;
-		const importedContent = sessionStorage.getItem(importKey);
-
-		if (importedContent) {
-			data.ytext.insert(0, importedContent);
-			sessionStorage.removeItem(importKey);
+	const { snapshot, send, actorRef } = useMachine(noteMachine, {
+		input: {
+			filename: page.params.noteId
 		}
 	});
 
-	data.ytext.observe(
-		// Read the note to find changes in the main title + update last edited
-		debounce(() => {
-			const lines = data.ytext.toString().split('\n');
-			const headingLine = lines.find((line) => line.startsWith('# '));
+	const ydoc = useSelector(actorRef, (snapshot) => snapshot.context.ydoc);
+	const ytext = useSelector(actorRef, (snapshot) => snapshot.context.ytext);
+	const filename = useSelector(actorRef, (snapshot) => snapshot.context.filename);
+	const syncProvider = useSelector(actorRef, (snapshot) => snapshot.context.syncProvider);
+	const user = useSelector(actorRef, (snapshot) => snapshot.context.user);
 
-			if (headingLine) {
-				updateTitle(page.params.id, headingLine.substring(2), db);
+	function handleFilenameChange(newFilename: string) {
+		send({ type: 'SET_FILE_NAME', value: newFilename });
+		goto(`/${newFilename}`);
+	}
 
-				return;
-			}
-
-			updateLastEdited(page.params.id, db);
-		}, 500)
-	);
-
-	let currentId = $state<string>(page.params.id);
-
-	$effect(() => {
-		const newId = page.params.id;
-		if (newId !== currentId) {
-			data.cleanup();
-			if (webrtcSync.provider) {
-				webrtcSync.provider.destroy();
-			}
-			currentId = newId;
-		}
-	});
-
-	onDestroy(() => {
-		data.cleanup();
-		if (webrtcSync.provider) {
-			webrtcSync.provider.destroy();
-		}
-	});
+	function toggleSync() {
+		send({
+			type: 'TOGGLE_SYNC'
+		});
+	}
 </script>
 
 <svelte:head>
 	<title>md.uy • {page.params.id}</title>
 </svelte:head>
 
-<div
-	class="col-span-2 row-start-2 mx-auto flex w-full flex-row flex-wrap items-center justify-between gap-3 md:col-span-1 md:col-start-2 md:row-start-1"
->
-	<EditorModeToggle bind:viewMode />
+{#if $snapshot.value === 'initializing' || $snapshot.value === 'fetching'}
+	Loading...
+{:else if $ytext && $ydoc}
 	<div
-		class="mb-1 flex w-full flex-row items-center justify-between gap-1 md:mb-0 md:w-fit md:justify-start md:gap-2"
+		class="col-span-2 row-start-2 mx-auto flex w-full flex-row flex-wrap items-center justify-between gap-3 md:col-span-1 md:col-start-2 md:row-start-1"
 	>
-		<div>
-			<CopyButton ydoc={data.ydoc} />
-			<DownloadButton ydoc={data.ydoc} />
+		<div class="flex items-center gap-2">
+			<EditorModeToggle bind:viewMode />
+			{#if $filename}
+				<div class="flex items-center gap-1">
+					<span class="text-muted-foreground text-sm">{$filename}</span>
+					<FilenameEditButton filename={$filename} onSave={handleFilenameChange} />
+				</div>
+			{/if}
 		</div>
-		<ShareButton
-			isSyncing={webrtcSync.isSyncing}
-			toggleSync={webrtcSync.toggleSync}
-			ytext={data.ytext}
-		/>
+		<div
+			class="mb-1 flex w-full flex-row items-center justify-between gap-1 md:mb-0 md:w-fit md:justify-start md:gap-2"
+		>
+			<div>
+				<CopyButton ydoc={$ydoc} />
+				<DownloadButton ydoc={$ydoc} />
+			</div>
+
+			<ShareButton isSyncing={$snapshot.value.active === 'sync'} {toggleSync} ytext={$ytext} />
+		</div>
 	</div>
-</div>
-<div
-	class="col-span-2 row-start-3 mx-auto flex h-full w-full flex-col items-start gap-4 overflow-hidden rounded md:col-span-1 md:col-start-2 md:row-start-2"
->
-	{#key page.params.id}
-		<Editor provider={webrtcSync.provider} ytext={data.ytext} isVisible={viewMode === 'edit'} />
-		<Preview ytext={data.ytext} isVisible={viewMode === 'preview'} />
-		<Presentation ytext={data.ytext} isVisible={viewMode === 'presentation'} />
-	{/key}
-</div>
-<div class="col-start-3 row-start-2 hidden w-full items-start gap-8 md:flex md:flex-col">
-	<Profile activeUser={webrtcSync.activeUser} />
-	{#if webrtcSync.provider}
-		<ConnectedUsers provider={webrtcSync.provider} activeUser={webrtcSync.activeUser} />
+
+	<div
+		class="col-span-2 row-start-2 mx-auto flex h-full w-full flex-col items-start gap-4 overflow-hidden rounded md:col-span-1 md:col-start-2 md:row-start-2"
+	>
+		{#key page.params.id}
+			<Editor ytext={$ytext} isVisible={viewMode === 'edit'} />
+			<Preview ytext={$ytext} isVisible={viewMode === 'preview'} />
+			<Presentation ytext={$ytext} isVisible={viewMode === 'presentation'} />
+		{/key}
+	</div>
+	{$snapshot.value.active}
+	{#if $snapshot.value.active === 'sync' && $syncProvider}
+		nfewqjfkeq
+		<div class="col-start-3 row-start-2 hidden w-full items-start gap-8 md:flex md:flex-col">
+			<Profile activeUser={$user} />
+			<ConnectedUsers provider={$syncProvider} activeUser={$user} />
+		</div>
 	{/if}
-</div>
+{:else}
+	There was an error loading this note
+{/if}

@@ -31,6 +31,7 @@
 		"@types/qrcode": "^1.5.5",
 		"@types/randomcolor": "^0.5.9",
 		"@vite-pwa/sveltekit": "^1.0.0",
+		"@xstate/svelte": "^4.0.5",
 		"bits-ui": "^2.1.0",
 		"clsx": "^2.1.1",
 		"culori": "^4.0.1",
@@ -53,7 +54,8 @@
 		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.32.1",
 		"vite": "^6.3.5",
-		"workbox-window": "^7.3.0"
+		"workbox-window": "^7.3.0",
+		"xstate": "^5.19.4"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [

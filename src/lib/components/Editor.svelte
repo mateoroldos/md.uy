@@ -1,10 +1,8 @@
 <script lang="ts">
-	import { codemirror } from '$lib/editor/codemirror-action.svelte';
-	import type { WebrtcProvider } from 'y-webrtc';
 	import * as Y from 'yjs';
+	import { codemirror } from '$lib/stores/codemirror.svelte';
 
-	let { provider, ytext, isVisible } = $props<{
-		provider: WebrtcProvider | null;
+	let { ytext, isVisible } = $props<{
 		ytext: Y.Text;
 		isVisible: boolean;
 	}>();
@@ -24,7 +22,7 @@
 	{/if}
 	<div
 		use:codemirror={{
-			provider,
+			provider: null,
 			ytext,
 			isVisible
 		}}

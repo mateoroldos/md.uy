@@ -10,13 +10,11 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { goto } from '$app/navigation';
 	import { generateId, isValidId } from '$lib/utils';
-	import { ArrowRight, Plus, Upload, Pin, Calendar } from '@lucide/svelte';
+	import { ArrowRight, Plus, Upload, Calendar } from '@lucide/svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { NANOID_LENGTH } from '$lib/constants';
 	import type { LayoutProps } from './$types';
-	import { getNoteIdByTitle } from '$lib/queries/notes-queries';
-	import { db } from '$lib/db';
-	import { createNoteWithContent } from '$lib/actions/notes-actions';
+	import { saveNoteToOPFS, type NoteInfo } from '$lib/services/opfs';
 
 	let { children, data }: LayoutProps = $props();
 	const { notes } = data;
@@ -26,45 +24,34 @@
 
 	const webManifest = $derived(pwaInfo ? pwaInfo.webManifest.linkTag : '');
 
-	const pinnedNotes = $derived($notes && $notes.filter((note) => note.isPinned));
+	// const pinnedNotes = $derived(notes && notes.filter((note) => note.isPinned));
 
-	function createNewDocument() {
-		goto(`/${generateId()}`);
+	async function createNewDocument(existingNotes: NoteInfo[]) {
+		const untitledNumbers = new Set<number>();
+		const untitledRegex = /^untitled-(\d+)\.md$/i;
+
+		for (const note of existingNotes) {
+			const match = note.filename.match(untitledRegex);
+			if (match) {
+				untitledNumbers.add(parseInt(match[1], 10));
+			}
+		}
+
+		// Find the first available number
+		let counter = 1;
+		while (untitledNumbers.has(counter)) {
+			counter++;
+		}
+
+		const newFilename = `untitled-${counter}.md`;
+
+		saveNoteToOPFS(newFilename, '');
+
+		goto(`/${newFilename}`);
 	}
 
 	function joinDocument() {
 		if (isValidId(documentId.trim())) goto(`/${documentId}`);
-	}
-
-	async function handleTodayNote() {
-		const today = new Date();
-		const months = [
-			'January',
-			'February',
-			'March',
-			'April',
-			'May',
-			'June',
-			'July',
-			'August',
-			'September',
-			'October',
-			'November',
-			'December'
-		];
-		const day = today.getDate();
-		const month = months[today.getMonth()];
-		const year = today.getFullYear();
-		const title = `${day} of ${month}, ${year}`;
-
-		const todayNoteId = await getNoteIdByTitle(db, title);
-
-		if (todayNoteId) {
-			return goto(`/${todayNoteId}`);
-		}
-
-		const newNoteId = createNoteWithContent(`# ${title}`);
-		goto(`/${newNoteId}`);
 	}
 
 	async function handleFileImport(event: Event) {
@@ -112,34 +99,16 @@
 		{@render children()}
 		<div class="row-start-2 hidden flex-col px-3 py-2 md:flex">
 			<div class="mb-4">
-				<Button
-					variant="outline"
-					size="sm"
-					class="flex items-center gap-1 text-xs"
-					onclick={handleTodayNote}
-				>
-					<Calendar class="size-3!" />
-					<span>Today's Note</span>
-				</Button>
+				<!-- <Button -->
+				<!-- 	variant="outline" -->
+				<!-- 	size="sm" -->
+				<!-- 	class="flex items-center gap-1 text-xs" -->
+				<!-- 	onclick={handleTodayNote} -->
+				<!-- > -->
+				<!-- 	<Calendar class="size-3!" /> -->
+				<!-- 	<span>Today's Note</span> -->
+				<!-- </Button> -->
 			</div>
-			{#if pinnedNotes && pinnedNotes.length > 0}
-				<h3 class="mb-2 flex items-center gap-1 text-xs font-medium">
-					<Pin class="size-3" /> Pinned Notes
-				</h3>
-				<ul class="space-y-1 text-xs">
-					{#each pinnedNotes as note (note.id)}
-						<li>
-							<a
-								href="/{note.id}"
-								class="hover:text-foreground text-foreground/70 block truncate transition-colors duration-100"
-								title={note.title}
-							>
-								{note.title || 'Untitled Note'}
-							</a>
-						</li>
-					{/each}
-				</ul>
-			{/if}
 		</div>
 		<div
 			class="col-start-2 row-start-1 flex items-center justify-end gap-2 py-2 md:col-start-3 md:px-3"
@@ -177,7 +146,7 @@
 			<Button size="icon" variant="outline" onclick={() => fileInput.click()}>
 				<Upload class="size-3!" />
 			</Button>
-			<Button size="icon" onclick={createNewDocument}><Plus class="size-3!" /></Button>
+			<Button size="icon" onclick={() => createNewDocument(notes)}><Plus class="size-3!" /></Button>
 		</div>
 	</div>
 	<footer

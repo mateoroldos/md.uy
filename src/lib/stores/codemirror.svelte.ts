@@ -1,6 +1,6 @@
 import * as Y from 'yjs';
 import { WebrtcProvider } from 'y-webrtc';
-import { initCodemirror } from '../editor/initCodemirror';
+import { initCodemirror } from '$lib/services/codemirror';
 
 interface CodeMirrorOptions {
 	ytext: Y.Text;

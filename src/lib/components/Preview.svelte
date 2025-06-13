@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { markedAction } from '$lib/editor/marked-action.svelte';
 	import * as Y from 'yjs';
+	import { markdownToHtml } from '$lib/utils/md-to-html';
 
 	let { ytext, isVisible } = $props<{ ytext: Y.Text; isVisible: boolean }>();
 
@@ -18,7 +18,7 @@
 		</div>
 	{/if}
 	<div
-		use:markedAction={{
+		use:markdownToHtml={{
 			ytext
 		}}
 		class="prose dark:prose-invert h-full min-w-full overflow-auto px-8 py-6 break-words"
