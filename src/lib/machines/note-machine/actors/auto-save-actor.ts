@@ -5,14 +5,24 @@ import * as Y from 'yjs';
 
 export const autoSaveActor = fromCallback<
 	// Event types that can be sent back to parent
-	{ type: 'SAVE_SUCCESS'; note: string } | { type: 'SAVE_ERROR'; error: Error },
+	{ type: 'SAVE_SUCCESS'; note: string } | { type: 'SAVE_ERROR'; error: unknown },
 	// Input type
 	{ ytext: Y.Text; filename: string }
->(({ input }) => {
+>(({ input, sendBack }) => {
 	const { ytext, filename } = input;
 
 	const debouncedSave = debounce(async (content: string) => {
-		await saveNoteToOPFS(filename, content);
+		const result = await saveNoteToOPFS(filename, content);
+		
+		result.match(
+			() => {
+				sendBack({ type: 'SAVE_SUCCESS', note: content });
+			},
+			(error) => {
+				console.error('Auto-save failed:', error);
+				sendBack({ type: 'SAVE_ERROR', error });
+			}
+		);
 	}, 700);
 
 	const observer = () => {

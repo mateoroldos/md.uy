@@ -1,85 +1,112 @@
-export async function getNoteFromOPFS(filename: string): Promise<string> {
-	try {
-		const rootDir = await navigator.storage.getDirectory();
-		const fileHandle = await rootDir.getFileHandle(filename, { create: true });
-		const file = await fileHandle.getFile();
-		console.log('e', await file.text());
-		return await file.text();
-	} catch (error) {
-		console.warn('Could not read note from OPFS:', error);
-		return ''; // Return empty string for new notes
-	}
+import type { Note } from '$lib/types';
+import { fromPromise, ResultAsync } from 'neverthrow';
+
+type GetNoteError = {
+	type: 'GET_NOTE_ERROR';
+	error: unknown;
+	context: { filename: string };
+};
+
+type SaveNoteError = {
+	type: 'SAVE_NOTE_ERROR';
+	error: unknown;
+	context: { filename: string };
+};
+
+type ListNotesError = {
+	type: 'LIST_NOTES_ERROR';
+	error: unknown;
+};
+
+type DeleteNoteError = {
+	type: 'DELETE_NOTE_ERROR';
+	error: unknown;
+	context: { filename: string };
+};
+
+type RenameNoteError = {
+	type: 'RENAME_NOTE_ERROR';
+	error: unknown;
+	context: { oldFilename: string; newFilename: string };
+};
+
+export function getNoteFromOPFS(filename: string): ResultAsync<string, GetNoteError> {
+	return fromPromise(
+		(async () => {
+			const rootDir = await navigator.storage.getDirectory();
+			const fileHandle = await rootDir.getFileHandle(filename);
+			const file = await fileHandle.getFile();
+			return await file.text();
+		})(),
+		(error) => ({ type: 'GET_NOTE_ERROR', error, context: { filename } }) as const
+	);
 }
 
-export async function saveNoteToOPFS(noteDisplayName: string, content: string): Promise<void> {
-	try {
-		const rootDir = await navigator.storage.getDirectory();
-		const fileHandle = await rootDir.getFileHandle(noteDisplayName, { create: true });
-		const writable = await fileHandle.createWritable();
-		await writable.write(content);
-		await writable.close();
-	} catch (error) {
-		console.error('Failed to save note to OPFS:', error);
-	}
+export function saveNoteToOPFS(
+	noteDisplayName: string,
+	content: string
+): ResultAsync<void, SaveNoteError> {
+	return fromPromise(
+		(async () => {
+			const rootDir = await navigator.storage.getDirectory();
+			const fileHandle = await rootDir.getFileHandle(noteDisplayName, { create: true });
+			const writable = await fileHandle.createWritable();
+			await writable.write(content);
+			await writable.close();
+		})(),
+		(error) => ({ type: 'SAVE_NOTE_ERROR', error, context: { filename: noteDisplayName } }) as const
+	);
 }
 
-export interface NoteInfo {
-	filename: string;
-	name: string;
-	lastModified: Date;
-	size: number;
-}
+export function listNotesFromOPFS(): ResultAsync<Note[], ListNotesError> {
+	return fromPromise(
+		(async () => {
+			const rootDir = await navigator.storage.getDirectory();
+			const notes: Note[] = [];
 
-export async function listNotesFromOPFS(): Promise<NoteInfo[]> {
-	try {
-		const rootDir = await navigator.storage.getDirectory();
-		const notes: NoteInfo[] = [];
-
-		// Iterate through all files in the root directory
-		for await (const [name, handle] of rootDir.entries()) {
-			// Only include .md files
-			if (handle.kind === 'file' && name.endsWith('.md')) {
-				const file = await handle.getFile();
-				const noteId = name.replace('.md', ''); // Remove .md extension
-
-				notes.push({
-					filename: noteId,
-					name: name,
-					lastModified: new Date(file.lastModified),
-					size: file.size
-				});
+			// Iterate through all files in the root directory
+			for await (const [name, handle] of rootDir.entries()) {
+				// Only include .md files
+				if (handle.kind === 'file' && name.endsWith('.md')) {
+					const file = await handle.getFile();
+					notes.push({
+						filename: name,
+						lastModified: new Date(file.lastModified),
+						size: file.size
+					});
+				}
 			}
-		}
 
-		// Sort by last modified date (newest first)
-		notes.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
-
-		return notes;
-	} catch (error) {
-		console.error('Failed to list notes from OPFS:', error);
-		return [];
-	}
+			// Sort by last modified date (newest first)
+			notes.sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime());
+			return notes;
+		})(),
+		(error) => ({ type: 'LIST_NOTES_ERROR', error }) as const
+	);
 }
 
-export async function renameNoteInOPFS(oldFilename: string, newFilename: string): Promise<void> {
-	try {
-		const rootDir = await navigator.storage.getDirectory();
+export function deleteNoteFromOPFS(filename: string): ResultAsync<void, DeleteNoteError> {
+	return fromPromise(
+		(async () => {
+			const rootDir = await navigator.storage.getDirectory();
+			await rootDir.removeEntry(filename);
+		})(),
+		(error) => ({ type: 'DELETE_NOTE_ERROR', error, context: { filename } }) as const
+	);
+}
 
-		// Read old file content
-		const oldHandle = await rootDir.getFileHandle(oldFilename);
-		const file = await oldHandle.getFile();
-		const content = await file.text();
+export function renameNoteInOPFS(
+	oldFilename: string,
+	newFilename: string
+): ResultAsync<void, RenameNoteError | GetNoteError | SaveNoteError | DeleteNoteError> {
+	const getContent = getNoteFromOPFS(oldFilename);
+	const saveAndDelete = (content: string) =>
+		saveNoteToOPFS(newFilename, content).andThen(() => deleteNoteFromOPFS(oldFilename));
 
-		// Create new file
-		const newHandle = await rootDir.getFileHandle(newFilename, { create: true });
-		const writable = await newHandle.createWritable();
-		await writable.write(content);
-		await writable.close();
-
-		// Delete old file
-		await rootDir.removeEntry(oldFilename);
-	} catch (error) {
-		console.error('Failed to rename note:', error);
-		throw error;
-	}
+	return getContent
+		.andThen(saveAndDelete)
+		.mapErr(
+			(error) =>
+				({ type: 'RENAME_NOTE_ERROR', error, context: { oldFilename, newFilename } }) as const
+		);
 }

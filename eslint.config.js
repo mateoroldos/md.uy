@@ -6,6 +6,7 @@ import globals from 'globals';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript-eslint';
 import svelteConfig from './svelte.config.js';
+import neverthrow from 'eslint-plugin-neverthrow';
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
@@ -15,6 +16,7 @@ export default ts.config(
 	...ts.configs.recommended,
 	...svelte.configs.recommended,
 	prettier,
+	...neverthrow.configs.recommended,
 	...svelte.configs.prettier,
 	{
 		languageOptions: {

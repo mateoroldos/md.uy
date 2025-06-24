@@ -15,9 +15,18 @@
 	import { NANOID_LENGTH } from '$lib/constants';
 	import type { LayoutProps } from './$types';
 	import { saveNoteToOPFS, type NoteInfo } from '$lib/services/opfs';
+	import { Toaster } from '$lib/components/ui/sonner/index.js';
+	import { useMachine } from '@xstate/svelte';
+	import { workspaceMachine } from '$lib/machines/workspace-machine/workspace-machine';
 
 	let { children, data }: LayoutProps = $props();
 	const { notes } = data;
+
+	const { snapshot, send, actorRef } = useMachine(workspaceMachine, {
+		input: {
+			filename: page.params.id
+		}
+	});
 
 	let documentId = $state('');
 	let fileInput: HTMLInputElement;
@@ -85,6 +94,7 @@
 </svelte:head>
 
 <ModeWatcher />
+<Toaster />
 <div class="flex w-full flex-col">
 	<div
 		class="mx-auto grid w-[90%] flex-1 grid-cols-2 grid-rows-[auto_auto_1fr] flex-col gap-x-6 gap-y-1 overflow-hidden md:w-full md:grid-cols-[1fr_min(55%,_800px)_1fr] md:grid-rows-[auto_1fr_auto]"

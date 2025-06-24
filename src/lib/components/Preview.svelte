@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { safeMarkdownToHtml } from '$lib/utils/md-to-html';
 	import * as Y from 'yjs';
-	import { markdownToHtml } from '$lib/utils/md-to-html';
+	import { toast } from 'svelte-sonner';
 
 	let { ytext, isVisible } = $props<{ ytext: Y.Text; isVisible: boolean }>();
 
@@ -9,6 +10,35 @@
 	ytext.observe(() => {
 		isEmpty = !ytext.length;
 	});
+
+	const renderYjsMarkdown = (
+		node: HTMLElement,
+		{
+			ytext
+		}: {
+			ytext: Y.Text;
+		}
+	): void => {
+		const updateContent = () => {
+			const result = safeMarkdownToHtml(ytext.toString());
+
+			result.match(
+				(value) => {
+					node.innerHTML = value;
+				},
+				(error) => {
+					console.error(error);
+					toast('An error occured when generating note preview');
+				}
+			);
+		};
+
+		// Initial render
+		updateContent();
+
+		// Set up observer
+		ytext.observe(updateContent);
+	};
 </script>
 
 <div class="bg-card relative h-full w-full overflow-hidden rounded" class:hidden={!isVisible}>
@@ -18,7 +48,7 @@
 		</div>
 	{/if}
 	<div
-		use:markdownToHtml={{
+		use:renderYjsMarkdown={{
 			ytext
 		}}
 		class="prose dark:prose-invert h-full min-w-full overflow-auto px-8 py-6 break-words"

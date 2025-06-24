@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { useMachine, useSelector } from '@xstate/svelte';
+	import { workspaceMachine } from '$lib/machines/workspace-machine/workspace-machine';
 	import NotesTable from '$lib/components/NotesTable.svelte';
-	import type { PageProps } from './new/$types';
 
-	const { data }: PageProps = $props();
-	const { notes } = data;
+	const { snapshot, send, actorRef } = useMachine(workspaceMachine, {});
+
+	const notes = useSelector(actorRef, (snapshot) => snapshot.context.notes);
+	console.log('noo', $notes);
 </script>
 
 <svelte:head>
@@ -17,5 +20,14 @@
 		<h1 class="mb-1 text-center text-2xl font-medium tracking-widest">md.uy</h1>
 		<p class="text-muted-foreground/70 pb-2">the peer-to-peer markdown editor</p>
 	</div>
-	<NotesTable {notes} />
+	<!-- <NotesTable {notes} /> -->
+	<div class="flex flex-col gap-2">
+		{#each $notes as note (note.filename)}
+			<div>
+				<a href={`/${note.filename}`}>
+					{note.title}
+				</a>
+			</div>
+		{/each}
+	</div>
 </div>

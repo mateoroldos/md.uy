@@ -1,3 +1,4 @@
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
@@ -88,6 +89,20 @@ export default defineConfig({
 			}
 		})
 	],
+	optimizeDeps: {
+		esbuildOptions: {
+			// Node.js global to browser globalThis
+			define: {
+				global: 'globalThis'
+			},
+			// Enable esbuild polyfill plugins
+			plugins: [
+				NodeGlobalsPolyfillPlugin({
+					buffer: true
+				})
+			]
+		}
+	},
 	// Tauri-specific configuration
 	clearScreen: false,
 	server: {

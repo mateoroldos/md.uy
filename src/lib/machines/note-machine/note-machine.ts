@@ -16,6 +16,7 @@ interface NoteContext {
 	ytext: Y.Text | null;
 	syncProvider: WebrtcProvider | null;
 	user: ActiveUser;
+	error: string | null;
 }
 
 export type Platform = 'web' | 'desktop';
@@ -30,6 +31,9 @@ export const noteMachine = setup({
 			  }
 			| {
 					type: 'TOGGLE_SYNC';
+			  }
+			| {
+					type: 'RETRY';
 			  },
 		input: {} as {
 			filename: string;
@@ -49,8 +53,16 @@ export const noteMachine = setup({
 				newFilename: string;
 			}
 		) => {
-			await renameNoteInOPFS(params.oldFilename, params.newFilename);
-			assign({ filename: params.newFilename });
+			const result = await renameNoteInOPFS(params.oldFilename, params.newFilename);
+			result.match(
+				() => {
+					assign({ filename: params.newFilename });
+				},
+				(error) => {
+					console.error('Failed to rename note:', error);
+					// Note: In a real implementation, you might want to show this error to the user
+				}
+			);
 		}
 	}
 }).createMachine({
@@ -63,7 +75,8 @@ export const noteMachine = setup({
 		ydoc: null,
 		ytext: null,
 		syncProvider: null,
-		user: new ActiveUser()
+		user: new ActiveUser(),
+		error: null
 	}),
 	states: {
 		fetching: {
@@ -76,7 +89,16 @@ export const noteMachine = setup({
 				}),
 				onDone: {
 					target: 'initializing',
-					actions: assign({ initialContent: ({ event }) => event.output })
+					actions: assign({ 
+						initialContent: ({ event }) => event.output,
+						error: null
+					})
+				},
+				onError: {
+					target: 'error',
+					actions: assign({
+						error: ({ event }) => `Failed to load note: ${event.error?.message || 'Unknown error'}`
+					})
 				}
 			}
 		},
@@ -91,7 +113,14 @@ export const noteMachine = setup({
 					target: 'active',
 					actions: assign({
 						ydoc: ({ event }) => event.output.ydoc,
-						ytext: ({ event }) => event.output.ytext
+						ytext: ({ event }) => event.output.ytext,
+						error: null
+					})
+				},
+				onError: {
+					target: 'error',
+					actions: assign({
+						error: ({ event }) => `Failed to initialize document: ${event.error?.message || 'Unknown error'}`
 					})
 				}
 			}
@@ -138,8 +167,22 @@ export const noteMachine = setup({
 							actions: assign({
 								syncProvider: ({ event }) => event.output
 							})
+						},
+						onError: {
+							target: 'local',
+							actions: assign({
+								error: ({ event }) => `Sync failed: ${event.error?.message || 'Unknown error'}`
+							})
 						}
 					}
+				}
+			}
+		},
+		error: {
+			on: {
+				RETRY: {
+					target: 'fetching',
+					actions: assign({ error: null })
 				}
 			}
 		}

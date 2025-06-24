@@ -19,7 +19,7 @@
 
 	const { snapshot, send, actorRef } = useMachine(noteMachine, {
 		input: {
-			filename: page.params.noteId
+			filename: page.params.id
 		}
 	});
 
@@ -67,7 +67,7 @@
 				<CopyButton ydoc={$ydoc} />
 				<DownloadButton ydoc={$ydoc} />
 			</div>
-
+			{$filename} aaa
 			<ShareButton isSyncing={$snapshot.value.active === 'sync'} {toggleSync} ytext={$ytext} />
 		</div>
 	</div>

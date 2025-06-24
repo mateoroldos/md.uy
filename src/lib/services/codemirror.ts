@@ -2,19 +2,36 @@ import * as Y from 'yjs';
 import { WebrtcProvider } from 'y-webrtc';
 import { yCollab } from 'y-codemirror.next';
 import { EditorView, basicSetup } from 'codemirror';
-import { EditorState } from '@codemirror/state';
+import { EditorState, type Extension } from '@codemirror/state';
 import { markdown } from '@codemirror/lang-markdown';
+import { fromThrowable, Result } from 'neverthrow';
+
+type UndoManagerError = {
+	type: 'UNDO_MANAGER_ERROR';
+	error: unknown;
+	context?: { ytext: Y.Text };
+};
+
+type EditorStateError = {
+	type: 'EDITOR_STATE_ERROR';
+	error: unknown;
+	context?: { extensions: Extension[] };
+};
+
+type EditorViewError = {
+	type: 'EDITOR_VIEW_ERROR';
+	error: unknown;
+	context?: { parent: HTMLElement };
+};
+
+type CodeMirrorError = UndoManagerError | EditorStateError | EditorViewError;
 
 export const initCodemirror = (
 	node: HTMLElement,
 	ytext: Y.Text,
 	provider: WebrtcProvider | null
-) => {
-	let editorView: EditorView;
-
-	try {
-		const undoManager = new Y.UndoManager(ytext);
-
+): Result<{ editorView: EditorView }, CodeMirrorError> => {
+	return safeCreateUndoManager(ytext).andThen((undoManager) => {
 		const extensions = [basicSetup, markdown(), theme, EditorView.lineWrapping];
 
 		if (provider) {
@@ -23,21 +40,10 @@ export const initCodemirror = (
 			extensions.push(yCollab(ytext, null, { undoManager }));
 		}
 
-		const editorState = EditorState.create({
-			doc: ytext.toString(),
-			extensions
-		});
-
-		editorView = new EditorView({
-			state: editorState,
-			parent: node
-		});
-	} catch (err) {
-		console.error('Error initializing editor:', err);
-		throw err;
-	}
-
-	return { editorView };
+		return safeCreateEditorState(ytext, extensions).andThen((editorState) =>
+			safeCreateEditorView(editorState, node).map((editorView) => ({ editorView }))
+		);
+	});
 };
 
 const theme = EditorView.theme({
@@ -73,3 +79,32 @@ const theme = EditorView.theme({
 	'.ͼ5.ͼ6': { color: 'oklch(var(--muted-foreground))' },
 	'.ͼ7': { fontWeight: '500' }
 });
+
+const safeCreateUndoManager = (ytext: Y.Text): Result<Y.UndoManager, UndoManagerError> => {
+	return fromThrowable(
+		() => new Y.UndoManager(ytext),
+		(error) => ({ type: 'UNDO_MANAGER_ERROR', error, context: { ytext } }) as const
+	)();
+};
+
+const safeCreateEditorState = (ytext: Y.Text, extensions: Extension[]): Result<EditorState, EditorStateError> => {
+	return fromThrowable(
+		() =>
+			EditorState.create({
+				doc: ytext.toString(),
+				extensions
+			}),
+		(error) => ({ type: 'EDITOR_STATE_ERROR', error, context: { extensions } }) as const
+	)();
+};
+
+const safeCreateEditorView = (state: EditorState, parent: HTMLElement): Result<EditorView, EditorViewError> => {
+	return fromThrowable(
+		() =>
+			new EditorView({
+				state,
+				parent
+			}),
+		(error) => ({ type: 'EDITOR_VIEW_ERROR', error, context: { parent } }) as const
+	)();
+};

@@ -16,12 +16,10 @@
 	import { Input } from '$lib/components/ui/input';
 	import { goto } from '$app/navigation';
 	import { Pin, Star } from '@lucide/svelte';
-	import type { Observable } from 'dexie';
 	import type { Note } from '$lib/db';
+	import type { Readable } from 'svelte/store';
 
-	let { notes } = $props<{ notes: Observable<Note[]> }>();
-
-	const derivedNotes = $derived($notes || []);
+	let { notes } = $props<{ notes: Readable<Note[]> }>();
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 	let sorting = $state<SortingState>([]);
@@ -30,7 +28,7 @@
 
 	const table = createSvelteTable({
 		get data() {
-			return derivedNotes;
+			return notes;
 		},
 		columns,
 		getCoreRowModel: getCoreRowModel(),
