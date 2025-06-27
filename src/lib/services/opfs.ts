@@ -1,4 +1,4 @@
-import type { Note } from '$lib/types';
+import type { NoteFile } from '$lib/types';
 import { fromPromise, ResultAsync } from 'neverthrow';
 
 type GetNoteError = {
@@ -43,28 +43,30 @@ export function getNoteFromOPFS(filename: string): ResultAsync<string, GetNoteEr
 }
 
 export function saveNoteToOPFS(
-	noteDisplayName: string,
+	filename: string,
 	content: string
-): ResultAsync<void, SaveNoteError> {
+): ResultAsync<string, SaveNoteError> {
 	return fromPromise(
 		(async () => {
 			const rootDir = await navigator.storage.getDirectory();
-			const fileHandle = await rootDir.getFileHandle(noteDisplayName, { create: true });
+			const fileHandle = await rootDir.getFileHandle(filename, { create: true });
 			const writable = await fileHandle.createWritable();
 			await writable.write(content);
 			await writable.close();
+			return filename;
 		})(),
-		(error) => ({ type: 'SAVE_NOTE_ERROR', error, context: { filename: noteDisplayName } }) as const
+		(error) => ({ type: 'SAVE_NOTE_ERROR', error, context: { filename: filename } }) as const
 	);
 }
 
-export function listNotesFromOPFS(): ResultAsync<Note[], ListNotesError> {
+export function listNotesFromOPFS(): ResultAsync<NoteFile[], ListNotesError> {
 	return fromPromise(
 		(async () => {
 			const rootDir = await navigator.storage.getDirectory();
-			const notes: Note[] = [];
+			const notes: NoteFile[] = [];
 
 			// Iterate through all files in the root directory
+			// @ts-ignore: entries does exist
 			for await (const [name, handle] of rootDir.entries()) {
 				// Only include .md files
 				if (handle.kind === 'file' && name.endsWith('.md')) {

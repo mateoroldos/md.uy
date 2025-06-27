@@ -1,4 +1,4 @@
-import type { Note, Platform } from '$lib/types';
+import type { NoteFile, Platform } from '$lib/types';
 import { fromPromise } from 'xstate';
 import { getNoteFromOPFS, listNotesFromOPFS } from '$lib/services/opfs';
 import { parseNoteFrontmatter } from '$lib/utils/markdown-parsing';
@@ -24,6 +24,7 @@ export const syncNotesFromOPFSActor = fromPromise(
 		input: {
 			store: NotesCacheDatabase;
 			platform: Platform;
+			filenames: string[];
 		};
 	}): Promise<Result<SyncNotesResult, SyncNotesError>> => {
 		const { store } = input;
@@ -46,7 +47,7 @@ export const syncNotesFromOPFSActor = fromPromise(
 		}
 
 		const updates: Record<string, CachedNote & { tags: string[] }> = {};
-		const filesToRead: Note[] = [];
+		const filesToRead: NoteFile[] = [];
 		let skippedCount = 0;
 
 		// First pass: identify which files need to be read

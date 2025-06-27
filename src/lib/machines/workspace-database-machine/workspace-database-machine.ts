@@ -11,7 +11,7 @@ interface WorkspaceDatabaseContext {
 	persister: IndexedDbPersister | null;
 	platform: Platform;
 	error: string | null;
-	invalidatingFilenames?: string[];
+	invalidatingFilenames: string[];
 	parentRef: ParentActor;
 }
 
@@ -54,6 +54,7 @@ export const workspaceCacheMachine = setup({
 		persister: null,
 		platform: input.platform || 'web',
 		parentRef: input.parentRef,
+		invalidatingFilenames: [],
 		error: null
 	}),
 	states: {
@@ -87,7 +88,8 @@ export const workspaceCacheMachine = setup({
 				src: 'syncNotesFromOPFS',
 				input: ({ context }) => ({
 					store: context.store!,
-					platform: context.platform
+					platform: context.platform,
+					filenames: []
 				}),
 				onDone: [
 					{

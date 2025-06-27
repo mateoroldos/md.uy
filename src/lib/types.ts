@@ -7,16 +7,8 @@ export type EditorMode = 'edit' | 'preview' | 'presentation';
 
 export type Platform = 'web' | 'desktop';
 
-export type Note = {
+export type NoteFile = {
 	filename: string;
 	lastModified: Date;
 	size: string;
 };
-
-export interface NoteMetadata {
-	favorite: boolean;
-	title: string;
-	modified: number;
-	tags?: string[];
-	created?: number;
-}

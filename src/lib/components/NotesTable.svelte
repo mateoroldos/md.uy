@@ -16,10 +16,12 @@
 	import { Input } from '$lib/components/ui/input';
 	import { goto } from '$app/navigation';
 	import { Pin, Star } from '@lucide/svelte';
-	import type { Note } from '$lib/db';
 	import type { Readable } from 'svelte/store';
+	import type { CachedNote } from '$lib/services/tinybase';
 
-	let { notes } = $props<{ notes: Readable<Note[]> }>();
+	let { notes } = $props<{ notes: Readable<CachedNote[]> }>();
+	$inspect($notes);
+	console.log($notes);
 
 	let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
 	let sorting = $state<SortingState>([]);
@@ -28,7 +30,7 @@
 
 	const table = createSvelteTable({
 		get data() {
-			return notes;
+			return $notes;
 		},
 		columns,
 		getCoreRowModel: getCoreRowModel(),
@@ -82,38 +84,38 @@
 
 <div>
 	<div class="flex justify-between gap-4 py-4">
-		<Input
-			placeholder="Filter titles..."
-			value={table?.getColumn('title')?.getFilterValue() as string}
-			onchange={(e) => table?.getColumn('title')?.setFilterValue(e.currentTarget.value)}
-			oninput={(e) => table?.getColumn('title')?.setFilterValue(e.currentTarget.value)}
-			class="h-8 max-w-sm text-xs! placeholder:text-xs"
-		/>
+		<!-- <Input -->
+		<!-- 	placeholder="Filter titles..." -->
+		<!-- 	value={table?.getColumn('title')?.getFilterValue() as string} -->
+		<!-- 	onchange={(e) => table?.getColumn('title')?.setFilterValue(e.currentTarget.value)} -->
+		<!-- 	oninput={(e) => table?.getColumn('title')?.setFilterValue(e.currentTarget.value)} -->
+		<!-- 	class="h-8 max-w-sm text-xs! placeholder:text-xs" -->
+		<!-- /> -->
 
 		<div class="flex flex-1 flex-row justify-end gap-1 text-xs">
-			<Button
-				variant={table?.getColumn('isPinned')?.getFilterValue() ? 'default' : 'outline'}
-				size="sm"
-				class="aspect-square h-full"
-				onclick={() => {
-					const column = table?.getColumn('isPinned');
-					column?.setFilterValue(column?.getFilterValue() ? null : true);
-				}}
-			>
-				<Pin class="size-3!" />
-			</Button>
-
-			<Button
-				variant={table?.getColumn('isFavorite')?.getFilterValue() ? 'default' : 'outline'}
-				size="sm"
-				class="aspect-square h-full"
-				onclick={() => {
-					const column = table?.getColumn('isFavorite');
-					column?.setFilterValue(column?.getFilterValue() ? null : true);
-				}}
-			>
-				<Star class="size-3!" />
-			</Button>
+			<!-- <Button -->
+			<!-- 	variant={table?.getColumn('isPinned')?.getFilterValue() ? 'default' : 'outline'} -->
+			<!-- 	size="sm" -->
+			<!-- 	class="aspect-square h-full" -->
+			<!-- 	onclick={() => { -->
+			<!-- 		const column = table?.getColumn('isPinned'); -->
+			<!-- 		column?.setFilterValue(column?.getFilterValue() ? null : true); -->
+			<!-- 	}} -->
+			<!-- > -->
+			<!-- 	<Pin class="size-3!" /> -->
+			<!-- </Button> -->
+			<!---->
+			<!-- <Button -->
+			<!-- 	variant={table?.getColumn('isFavorite')?.getFilterValue() ? 'default' : 'outline'} -->
+			<!-- 	size="sm" -->
+			<!-- 	class="aspect-square h-full" -->
+			<!-- 	onclick={() => { -->
+			<!-- 		const column = table?.getColumn('isFavorite'); -->
+			<!-- 		column?.setFilterValue(column?.getFilterValue() ? null : true); -->
+			<!-- 	}} -->
+			<!-- > -->
+			<!-- 	<Star class="size-3!" /> -->
+			<!-- </Button> -->
 		</div>
 	</div>
 
@@ -139,7 +141,7 @@
 				{#each table.getRowModel().rows as row (row.id)}
 					<Table.Row
 						data-state={row.getIsSelected() && 'selected'}
-						onclick={() => goto(`/${row.original.id}`)}
+						onclick={() => goto(`/${row.original.filename}`)}
 						class="cursor-pointer text-xs"
 					>
 						{#each row.getVisibleCells() as cell (cell.id)}

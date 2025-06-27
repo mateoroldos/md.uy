@@ -3,11 +3,12 @@ import type { Note } from '$lib/db';
 import { createRawSnippet } from 'svelte';
 import { renderSnippet, renderComponent } from '$lib/components/ui/data-table/index.js';
 import SortButton from '../SortButton.svelte';
+import type { CachedNote } from '$lib/services/tinybase';
 // import NoteActions from '../NoteActions.svelte';
 // import PinnedIcon from '../PinnedIcon.svelte';
 // import FavoriteIcon from '../FavoriteIcon.svelte';
 
-export const columns: ColumnDef<Note>[] = [
+export const columns: ColumnDef<CachedNote>[] = [
 	// {
 	// 	accessorKey: 'isPinned',
 	// 	header: () => '',
@@ -37,7 +38,7 @@ export const columns: ColumnDef<Note>[] = [
 			})
 	},
 	{
-		accessorKey: 'lastEdited',
+		accessorKey: 'modified',
 		header: ({ column }) =>
 			renderComponent(SortButton, {
 				onclick: column.getToggleSortingHandler(),
@@ -55,11 +56,11 @@ export const columns: ColumnDef<Note>[] = [
 				};
 			});
 
-			return renderSnippet(dateCellSnippet, formatter.format(new Date(row.getValue('lastEdited'))));
+			return renderSnippet(dateCellSnippet, formatter.format(new Date(row.getValue('modified'))));
 		}
 	},
 	{
-		accessorKey: 'id',
+		accessorKey: 'filename',
 		header: 'ID',
 		cell: ({ row }) => {
 			const idCellSnippet = createRawSnippet<[string]>((getId) => {
@@ -69,7 +70,7 @@ export const columns: ColumnDef<Note>[] = [
 				};
 			});
 
-			return renderSnippet(idCellSnippet, row.getValue('id'));
+			return renderSnippet(idCellSnippet, row.getValue('filename'));
 		}
 	}
 	// {
