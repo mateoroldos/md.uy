@@ -18,6 +18,11 @@ export function getWorkspaceContext() {
 		notes: useSelector(actorRef, (snapshot) => snapshot.context.notes),
 		state: useSelector(actorRef, (snapshot) => snapshot.value),
 		lastCreatedNote: useSelector(actorRef, (snapshot) => snapshot.context.lastCreatedNote),
+		currentWorkspace: useSelector(actorRef, (snapshot) => snapshot.context.currentWorkspace),
+		availableWorkspaces: useSelector(actorRef, (snapshot) => snapshot.context.availableWorkspaces),
+		fileSystemContext: useSelector(actorRef, (snapshot) => snapshot.context.fileSystemContext),
+		isLoadingWorkspace: useSelector(actorRef, (snapshot) => snapshot.context.isLoadingWorkspace),
+		error: useSelector(actorRef, (snapshot) => snapshot.context.error),
 		send
 	};
 }

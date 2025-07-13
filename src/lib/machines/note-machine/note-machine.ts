@@ -1,4 +1,5 @@
-import { renameNoteInOPFS } from '$lib/services/opfs';
+import { createFileSystemWithFallback } from '$lib/services/filesystem';
+import { detectContext, FileSystemContext } from '$lib/services/utils/context';
 import { setup, assign } from 'xstate';
 import * as Y from 'yjs';
 import { autoSaveActor } from './actors/auto-save-actor';
@@ -11,6 +12,7 @@ import { ActiveUser } from '$lib/stores/webrtc-sync.svelte';
 interface NoteContext {
 	filename: string;
 	platform: Platform;
+	fileSystemContext: FileSystemContext;
 	initialContent: string;
 	ydoc: Y.Doc | null;
 	ytext: Y.Text | null;
@@ -53,7 +55,8 @@ export const noteMachine = setup({
 				newFilename: string;
 			}
 		) => {
-			const result = await renameNoteInOPFS(params.oldFilename, params.newFilename);
+			const fs = createFileSystemWithFallback();
+			const result = await fs.renameFile(params.oldFilename, params.newFilename);
 			result.match(
 				() => {
 					assign({ filename: params.newFilename });
@@ -68,16 +71,22 @@ export const noteMachine = setup({
 }).createMachine({
 	id: 'note',
 	initial: 'fetching',
-	context: ({ input }) => ({
-		filename: input.filename,
-		platform: 'web',
-		initialContent: '',
-		ydoc: null,
-		ytext: null,
-		syncProvider: null,
-		user: new ActiveUser(),
-		error: null
-	}),
+	context: ({ input }) => {
+		const detectedContext = detectContext();
+		const platform: Platform = detectedContext === FileSystemContext.TAURI ? 'desktop' : 'web';
+		
+		return {
+			filename: input.filename,
+			platform,
+			fileSystemContext: detectedContext,
+			initialContent: '',
+			ydoc: null,
+			ytext: null,
+			syncProvider: null,
+			user: new ActiveUser(),
+			error: null
+		};
+	},
 	states: {
 		fetching: {
 			description: 'Load note from OPFS or FS',

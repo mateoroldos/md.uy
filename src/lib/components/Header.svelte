@@ -1,19 +1,29 @@
 <script lang="ts">
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
-	import GitHubStars from '$lib/components/GitHubStars.svelte';
+	// import GitHubStars from '$lib/components/GitHubStars.svelte';
+	import WorkspaceSelector from '$lib/components/WorkspaceSelector.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { goto } from '$app/navigation';
 	import { generateId, isValidId } from '$lib/utils';
-	import { ArrowRight, Plus, Upload } from '@lucide/svelte';
+	import { ArrowRight, Plus, Upload, Settings, FolderOpen } from '@lucide/svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { NANOID_LENGTH } from '$lib/constants';
 	import { getWorkspaceContext } from '$lib/context/workspace-context';
+	import { FileSystemContext } from '$lib/services/utils/context';
 	import { waitFor } from 'xstate';
 
-	const { actorRef, send, lastCreatedNote } = getWorkspaceContext();
+	const { 
+		actorRef, 
+		send, 
+		lastCreatedNote, 
+		currentWorkspace, 
+		fileSystemContext,
+		isLoadingWorkspace
+	} = getWorkspaceContext();
 
 	let documentId = $state('');
-	let fileInput: HTMLInputElement;
+	let fileInput = $state<HTMLInputElement>();
+	let showWorkspaceSelector = $state(false);
 
 	async function createNote() {
 		const noteAddedBefore = $lastCreatedNote;
@@ -52,14 +62,37 @@
 			alert('Error reading the file. Please try again.');
 		}
 	}
+
+	// Only show workspace button for non-OPFS contexts when workspace is loaded
+	const showWorkspaceButton = $derived($currentWorkspace && ($fileSystemContext !== FileSystemContext.OPFS));
+	const isOPFS = $derived($fileSystemContext === FileSystemContext.OPFS);
 </script>
 
 <header
 	class="col-start-2 row-start-1 flex items-center justify-end gap-2 py-2 md:col-start-3 md:px-3"
 >
-	{$lastCreatedNote}
+	<!-- Workspace Button (only for non-OPFS) -->
+	{#if showWorkspaceButton}
+		<Button
+			variant="ghost"
+			size="sm"
+			class="text-muted-foreground hover:text-foreground hidden items-center gap-2 text-xs md:flex"
+			onclick={() => (showWorkspaceSelector = true)}
+			disabled={$isLoadingWorkspace}
+		>
+			<Settings class="h-3 w-3" />
+			{$currentWorkspace.name}
+		</Button>
+	{:else if isOPFS && $currentWorkspace}
+		<!-- For OPFS, show workspace name but not clickable -->
+		<div class="text-muted-foreground hidden items-center gap-2 text-xs md:flex">
+			<FolderOpen class="h-3 w-3" />
+			{$currentWorkspace.name}
+		</div>
+	{/if}
+
 	<div class="hidden md:block">
-		<GitHubStars />
+		<!-- <GitHubStars /> -->
 	</div>
 	<ThemeToggle />
 	<div class="relative ml-1 hidden md:block">
@@ -88,8 +121,10 @@
 		bind:this={fileInput}
 		onchange={handleFileImport}
 	/>
-	<Button size="icon" variant="outline" onclick={() => fileInput.click()}>
+	<Button size="icon" variant="outline" onclick={() => fileInput?.click()}>
 		<Upload class="size-3!" />
 	</Button>
-	<Button size="icon" onclick={() => createNote()}><Plus class="size-3!" /></Button>
+	<Button size="icon" onclick={createNote}><Plus class="size-3!" /></Button>
 </header>
+
+<WorkspaceSelector bind:open={showWorkspaceSelector} />

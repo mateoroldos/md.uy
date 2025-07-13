@@ -1,10 +1,11 @@
-import { getNoteFromOPFS } from '$lib/services/opfs';
+import { createFileSystemWithFallback } from '$lib/services/filesystem';
 import { fromPromise } from 'xstate';
 import type { Platform } from '../note-machine';
 
 export const getNoteContentActor = fromPromise(
 	async ({ input }: { input: { platform: Platform; filename: string } }) => {
-		const result = await getNoteFromOPFS(input.filename);
+		const fs = createFileSystemWithFallback();
+		const result = await fs.readFile(input.filename);
 		
 		return result.match(
 			(content) => content,

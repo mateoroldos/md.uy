@@ -7,6 +7,7 @@ import type { NotesCacheDatabase, CachedNote } from '$lib/services/tinybase';
 
 interface WorkspaceDatabaseContext {
 	workspaceId: string;
+	workspacePath?: string;
 	store: NotesCacheDatabase | null;
 	persister: IndexedDbPersister | null;
 	platform: Platform;
@@ -18,7 +19,8 @@ interface WorkspaceDatabaseContext {
 type ParentActor = ActorRef<Snapshot<unknown>, CacheReadyEvent>;
 
 interface WorkspaceDatabaseInput {
-	// workspaceId: string;
+	workspaceId: string;
+	workspacePath?: string;
 	platform?: Platform;
 	parentRef: ParentActor;
 }
@@ -49,7 +51,8 @@ export const workspaceCacheMachine = setup({
 	id: 'notesDatabase',
 	initial: 'initializing',
 	context: ({ input }) => ({
-		workspaceId: 'TODO.workspaceId',
+		workspaceId: input.workspaceId || 'default',
+		workspacePath: input.workspacePath,
 		store: null,
 		persister: null,
 		platform: input.platform || 'web',
@@ -89,7 +92,8 @@ export const workspaceCacheMachine = setup({
 				input: ({ context }) => ({
 					store: context.store!,
 					platform: context.platform,
-					filenames: []
+					filenames: [],
+					workspacePath: context.workspacePath
 				}),
 				onDone: [
 					{
@@ -148,7 +152,8 @@ export const workspaceCacheMachine = setup({
 				input: ({ context }) => ({
 					store: context.store!,
 					platform: context.platform,
-					filenames: context.invalidatingFilenames // Only sync specific files
+					filenames: context.invalidatingFilenames, // Only sync specific files
+					workspacePath: context.workspacePath
 				}),
 				onDone: [
 					{

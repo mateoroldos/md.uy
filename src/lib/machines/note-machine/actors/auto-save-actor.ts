@@ -1,4 +1,4 @@
-import { saveNoteToOPFS } from '$lib/services/opfs';
+import { createFileSystemWithFallback } from '$lib/services/filesystem';
 import debounce from 'debounce';
 import { fromCallback } from 'xstate';
 import * as Y from 'yjs';
@@ -10,9 +10,10 @@ export const autoSaveActor = fromCallback<
 	{ ytext: Y.Text; filename: string }
 >(({ input, sendBack }) => {
 	const { ytext, filename } = input;
+	const fs = createFileSystemWithFallback();
 
 	const debouncedSave = debounce(async (content: string) => {
-		const result = await saveNoteToOPFS(filename, content);
+		const result = await fs.writeFile(filename, content);
 		
 		result.match(
 			() => {

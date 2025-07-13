@@ -1,6 +1,6 @@
 import type { NoteFile, Platform } from '$lib/types';
 import { fromPromise } from 'xstate';
-import { getNoteFromOPFS, listNotesFromOPFS } from '$lib/services/opfs';
+import { createFileSystemWithFallback } from '$lib/services/filesystem';
 import { parseNoteFrontmatter } from '$lib/utils/markdown-parsing';
 import { ok, err, type Result } from 'neverthrow';
 import type { NotesCacheDatabase, CachedNote } from '$lib/services/tinybase';
@@ -25,11 +25,15 @@ export const syncNotesFromOPFSActor = fromPromise(
 			store: NotesCacheDatabase;
 			platform: Platform;
 			filenames: string[];
+			workspacePath?: string;
 		};
 	}): Promise<Result<SyncNotesResult, SyncNotesError>> => {
-		const { store } = input;
+		const { store, workspacePath } = input;
+		const fs = createFileSystemWithFallback({
+			workspacePath
+		});
 
-		const notesResult = await listNotesFromOPFS();
+		const notesResult = await fs.listFiles();
 		const notes = notesResult.match(
 			(notesList) => notesList,
 			(error) => {
@@ -41,7 +45,7 @@ export const syncNotesFromOPFSActor = fromPromise(
 		if (!notes) {
 			return err({
 				type: 'SYNC_NOTES_ERROR',
-				error: 'Failed to list notes from OPFS',
+				error: 'Failed to list notes from filesystem',
 				context: { phase: 'list_notes' }
 			});
 		}
@@ -69,7 +73,7 @@ export const syncNotesFromOPFSActor = fromPromise(
 
 		// Second pass: read and parse only the necessary files
 		for (const note of filesToRead) {
-			const contentResult = await getNoteFromOPFS(note.filename);
+			const contentResult = await fs.readFile(note.filename);
 
 			contentResult.match(
 				(content) => {
